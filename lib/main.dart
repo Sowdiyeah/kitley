@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kitley/pages/chat_page.dart';
+import 'package:kitley/pages/inventory_page.dart';
+import 'package:kitley/pages/profile_page.dart';
 import 'package:kitley/pages/search_page.dart';
 
 void main() => runApp(MyApp());
@@ -14,8 +17,9 @@ class MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = <Widget>[
     MapSample(),
-    Text('Index 1: Business'),
-    Text('Index 2: School'),
+    InventoryPage(),
+    ChatPage(),
+    ProfilePage(),
   ];
 
   @override
@@ -33,10 +37,9 @@ class MyAppState extends State<MyApp> {
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: Icon(Icons.search), title: Text('Search')),
-            // BottomNavigationBarItem(icon: Icon(Icons.perm_identity), title: Text('Profile')),
-            BottomNavigationBarItem(icon: Icon(Icons.gavel), title: Text('Borrow')),
-            // BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), title: Text('Inventory')),
+            BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), title: Text('Inventory')),
             BottomNavigationBarItem(icon: Icon(Icons.question_answer), title: Text('Chat')),
+            BottomNavigationBarItem(icon: Icon(Icons.perm_identity), title: Text('Profile')),
           ],
           onTap: (int index) {
             setState(() {
