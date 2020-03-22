@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kitley/pages/search_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,8 +12,8 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Index 0: Home'),
+  final List<Widget> _widgetOptions = <Widget>[
+    MapSample(),
     Text('Index 1: Business'),
     Text('Index 2: School'),
   ];
