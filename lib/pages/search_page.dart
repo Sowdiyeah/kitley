@@ -1,47 +1,38 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class MapSample extends StatefulWidget {
-  @override
-  State<MapSample> createState() => MapSampleState();
-}
-
-class MapSampleState extends State<MapSample> {
-  Completer<GoogleMapController> _controller = Completer();
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
-  );
-
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
-
+class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToTheLake,
-        label: Text('To the lake!'),
-        icon: Icon(Icons.directions_boat),
-      ),
+    return ListView(
+      children: <Widget>[
+        Card(
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage('assets/nico.png'),
+            ),
+            title: Text('Sunglasses'),
+            subtitle: Text('500 m'),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage('assets/sean.png'),
+            ),
+            title: Text('Hammer'),
+            subtitle: Text('500 m'),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage('assets/menno.png'),
+            ),
+            title: Text('Screwdriver'),
+            subtitle: Text('500 m'),
+          ),
+        ),
+      ],
     );
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }

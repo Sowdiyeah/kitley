@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   final List<Widget> _widgetOptions = <Widget>[
-    MapSample(),
+    SearchPage(),
     InventoryPage(),
     ChatPage(),
     ProfilePage(),
@@ -27,7 +27,7 @@ class MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Kitley',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -35,11 +35,13 @@ class MyAppState extends State<MyApp> {
         ),
         body: _widgetOptions[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.orange,
+          unselectedItemColor: Colors.grey,
           items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.search), title: Text('Search')),
-            BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), title: Text('Inventory')),
+            BottomNavigationBarItem(icon: Icon(Icons.build), title: Text('Borrow')),
+            BottomNavigationBarItem(icon: Icon(Icons.work), title: Text('Inventory')),
             BottomNavigationBarItem(icon: Icon(Icons.question_answer), title: Text('Chat')),
-            BottomNavigationBarItem(icon: Icon(Icons.perm_identity), title: Text('Profile')),
+            BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('Profile')),
           ],
           onTap: (int index) {
             setState(() {
