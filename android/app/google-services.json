@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "648742835699",
+    "firebase_url": "https://kitley.firebaseio.com",
+    "project_id": "kitley",
+    "storage_bucket": "kitley.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:648742835699:android:84ffbe8e5d7d95c39d2e86",
+        "android_client_info": {
+          "package_name": "com.example.kitley"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "648742835699-nqjmgjib8ro3q8us8jr57t8lp05lllnu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXjV0UhhfNjeJu4m2cgZz-BeBqPqUUtYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "648742835699-nqjmgjib8ro3q8us8jr57t8lp05lllnu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
