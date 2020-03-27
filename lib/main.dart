@@ -4,7 +4,13 @@ import 'package:kitley/pages/inventory_page.dart';
 import 'package:kitley/pages/profile_page.dart';
 import 'package:kitley/pages/search_page.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MaterialApp(
+      title: 'Kitley',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+      home: MyApp(),
+    ));
 
 class MyApp extends StatefulWidget {
   @override
@@ -19,37 +25,37 @@ class MyAppState extends State<MyApp> {
     SearchPage(),
     InventoryPage(),
     ChatPage(),
-    ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kitley',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Kitley'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            },
+          )
+        ],
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Center(child: Text('Kitley')),
-        ),
-        body: _widgetOptions[_selectedIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Colors.orange,
-          unselectedItemColor: Colors.grey,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.build), title: Text('Borrow')),
-            BottomNavigationBarItem(icon: Icon(Icons.work), title: Text('Inventory')),
-            BottomNavigationBarItem(icon: Icon(Icons.question_answer), title: Text('Chat')),
-            BottomNavigationBarItem(icon: Icon(Icons.person), title: Text('Profile')),
-          ],
-          onTap: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          currentIndex: _selectedIndex,
-        ),
+      body: _widgetOptions[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.orange,
+        unselectedItemColor: Colors.grey,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.build), title: Text('Borrow')),
+          BottomNavigationBarItem(icon: Icon(Icons.work), title: Text('Inventory')),
+          BottomNavigationBarItem(icon: Icon(Icons.question_answer), title: Text('Chat')),
+        ],
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        currentIndex: _selectedIndex,
       ),
     );
   }
