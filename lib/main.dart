@@ -14,9 +14,7 @@ void main() => runApp(MaterialApp(
 
 class MyApp extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return MyAppState();
-  }
+  State<StatefulWidget> createState() => MyAppState();
 }
 
 class MyAppState extends State<MyApp> {
