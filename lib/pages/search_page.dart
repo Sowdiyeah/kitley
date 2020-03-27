@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Item {
-  Item(this.name, this.distance);
-
-  String name;
-  int distance;
-}
-
 class SearchPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => SearchPageState();
