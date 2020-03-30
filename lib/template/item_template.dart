@@ -1,12 +1,31 @@
-class Item {
-  Item(this.name, this.latitude, this.longitude);
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  List<String> categories;
+class Item {
+  Item() {
+    timestamp = Timestamp.now();
+  }
+
   String brand;
+  String category;
   double latitude;
   double longitude;
   String name;
   String owner;
   double penalty;
   String remarks;
+  Timestamp timestamp;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'brand': brand,
+      'category': category,
+      'owner': owner,
+      'latitude': latitude,
+      'longitude': longitude,
+      'penalty': penalty,
+      'remarks': remarks,
+      'timestamp': timestamp,
+    };
+  }
 }
