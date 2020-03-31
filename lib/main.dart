@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/pages/inventory_page.dart';
 import 'package:kitley/pages/profile_page.dart';
 import 'package:kitley/pages/search_page.dart';
+import 'package:kitley/template/search_delegate.dart';
 
 void main() => runApp(MaterialApp(
       title: 'Kitley',
@@ -31,10 +33,17 @@ class MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: Text('Kitley'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {},
-          )
+          _selectedIndex == 0
+              ? IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    showSearch(
+                      context: context,
+                      delegate: CustomSearchDelegate(),
+                    );
+                  },
+                )
+              : Container(),
         ],
       ),
       drawer: Drawer(
@@ -52,7 +61,6 @@ class MyAppState extends State<MyApp> {
                 ),
               ),
             ),
-            ListTile(),
             ListTile(
               leading: Icon(Icons.message),
               title: Text('Messages'),

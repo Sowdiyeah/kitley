@@ -10,7 +10,7 @@ class SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('items').snapshots(),
+      stream: Firestore.instance.collection('items').limit(50).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return Center(child: Text('Error: ${snapshot.error}'));
 
@@ -24,7 +24,7 @@ class SearchPageState extends State<SearchPage> {
                   child: ListTile(
                     leading: CircleAvatar(),
                     title: Text(document['name']),
-                    subtitle: Text('${document['distance']} m'),
+                    subtitle: Text('${document['latitude']}, ${document['longitude']}'),
                     onTap: () {},
                   ),
                 );
