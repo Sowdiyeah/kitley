@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/pages/inventory_page.dart';
@@ -62,8 +63,18 @@ class MyAppState extends State<MyApp> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Messages'),
+              leading: Icon(Icons.build),
+              title: Text('Borrow'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.work),
+              title: Text('Inventory'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.question_answer),
+              title: Text('Chat'),
               onTap: () {},
             ),
             ListTile(
@@ -71,6 +82,37 @@ class MyAppState extends State<MyApp> {
               title: Text('Profile'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+              },
+            ),
+            FutureBuilder(
+              initialData: GeolocationStatus.unknown,
+              future: Geolocator().checkGeolocationPermissionStatus(),
+              builder: (BuildContext context, AsyncSnapshot<GeolocationStatus> snapshot) {
+                if (snapshot.hasError) {
+                  return ListTile(
+                    leading: Icon(Icons.not_listed_location),
+                    title: Text('Permission'),
+                  );
+                }
+
+                switch (snapshot.data) {
+                  case GeolocationStatus.granted:
+                    return ListTile(leading: Icon(Icons.location_on), title: Text('Permission'));
+                  case GeolocationStatus.denied:
+                    return ListTile(
+                      leading: Icon(Icons.location_off),
+                      title: Text('Permission'),
+                      onTap: () async {
+                        await Geolocator().getCurrentPosition();
+                        setState(() {});
+                      },
+                    );
+                  default:
+                    return ListTile(
+                      leading: Icon(Icons.not_listed_location),
+                      title: Text('Permission'),
+                    );
+                }
               },
             ),
             ListTile(
