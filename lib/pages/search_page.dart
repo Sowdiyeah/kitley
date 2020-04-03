@@ -22,20 +22,29 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget documentToWidget(DocumentSnapshot document) {
-    return Card(
-      child: ListTile(
-        leading: CircleAvatar(),
-        title: Text(document['name']),
-        subtitle: FutureBuilder(
-          initialData: 'Loading...',
-          future: _distanceToDocument(document),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+    return Dismissible(
+      key: Key(document.documentID),
+      onDismissed: (DismissDirection direction) {
+        Firestore.instance
+            .collection('items')
+            .document(document.documentID)
+            .delete();
+      },
+      child: Card(
+        child: ListTile(
+          leading: CircleAvatar(),
+          title: Text(document['name']),
+          subtitle: FutureBuilder(
+            initialData: 'Loading...',
+            future: _distanceToDocument(document),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
-            return Text(snapshot.data);
-          },
+              return Text(snapshot.data);
+            },
+          ),
+          onTap: () {},
         ),
-        onTap: () {},
       ),
     );
   }
