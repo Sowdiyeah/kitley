@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/pages/inventory_page.dart';
@@ -47,97 +48,128 @@ class MyAppState extends State<MyApp> {
               : Container(),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-              ),
-              child: Text(
-                'Info',
-                style: TextStyle(
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.build),
-              title: Text('Borrow'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.work),
-              title: Text('Inventory'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.question_answer),
-              title: Text('Chat'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Profile'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
-            ),
-            FutureBuilder(
-              initialData: GeolocationStatus.unknown,
-              future: Geolocator().checkGeolocationPermissionStatus(),
-              builder: (BuildContext context, AsyncSnapshot<GeolocationStatus> snapshot) {
-                if (snapshot.hasError) {
-                  return ListTile(
-                    leading: Icon(Icons.not_listed_location),
-                    title: Text('Permission'),
-                  );
-                }
-
-                switch (snapshot.data) {
-                  case GeolocationStatus.granted:
-                    return ListTile(leading: Icon(Icons.location_on), title: Text('Permission'));
-                  case GeolocationStatus.denied:
-                    return ListTile(
-                      leading: Icon(Icons.location_off),
-                      title: Text('Permission'),
-                      onTap: () async {
-                        await Geolocator().getCurrentPosition();
-                        setState(() {});
-                      },
-                    );
-                  default:
-                    return ListTile(
-                      leading: Icon(Icons.not_listed_location),
-                      title: Text('Permission'),
-                    );
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-            ),
-          ],
-        ),
-      ),
+      drawer: _Drawer(),
       body: _widgetOptions[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.build), title: Text('Borrow')),
-          BottomNavigationBarItem(icon: Icon(Icons.work), title: Text('Inventory')),
-          BottomNavigationBarItem(icon: Icon(Icons.question_answer), title: Text('Chat')),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar(BuildContext context) {
+    return BottomNavigationBar(
+      selectedItemColor: Theme.of(context).primaryColor,
+      unselectedItemColor: Colors.grey,
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.build),
+          title: Text('Borrow'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.work),
+          title: Text('Inventory'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.question_answer),
+          title: Text('Chat'),
+        ),
+      ],
+      onTap: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      currentIndex: _selectedIndex,
+    );
+  }
+}
+
+class _Drawer extends StatefulWidget {
+  @override
+  _DrawerState createState() => _DrawerState();
+}
+
+class _DrawerState extends State<_Drawer> {
+  bool _showUserDetails = false;
+  bool _loggedIn = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: <Widget>[
+          _buildDrawerHeader(context),
+          Expanded(
+            child: _showUserDetails ? _buildUserDetail() : _buildDrawerList(),
+          ),
         ],
-        onTap: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        currentIndex: _selectedIndex,
       ),
+    );
+  }
+
+  ListView _buildUserDetail() {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.exit_to_app),
+          title: Text('Log in'),
+        ),
+      ],
+    );
+  }
+
+  ListView _buildDrawerList() {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.build),
+          title: Text('Borrow'),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: Icon(Icons.work),
+          title: Text('Inventory'),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: Icon(Icons.question_answer),
+          title: Text('Chat'),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: Icon(Icons.account_circle),
+          title: Text('Profile'),
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage()));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.settings),
+          title: Text('Settings'),
+        ),
+      ],
+    );
+  }
+
+  UserAccountsDrawerHeader _buildDrawerHeader(BuildContext context) {
+    return _anonymousDrawerHeader();
+  }
+
+  UserAccountsDrawerHeader _anonymousDrawerHeader() {
+    return UserAccountsDrawerHeader(
+      arrowColor: Colors.black,
+      accountName: Text('Anonymous'),
+      accountEmail: Text(''),
+      currentAccountPicture: CircleAvatar(
+        backgroundColor: Colors.brown.shade800,
+        child: Text('A', style: TextStyle(fontSize: 36)),
+      ),
+      onDetailsPressed: () {
+        setState(() {
+          _showUserDetails = !_showUserDetails;
+        });
+      },
     );
   }
 }
