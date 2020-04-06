@@ -31,10 +31,10 @@ class _FilterPageState extends State<FilterPage> {
   @override
   void initState() {
     super.initState();
-    //_loadFilters();
+    _loadFilters();
   }
 
-  _loadFilters() async {
+  void _loadFilters() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _distance = (prefs.get('distance') ?? 0);
@@ -43,7 +43,7 @@ class _FilterPageState extends State<FilterPage> {
     });
   }
 
-  _saveFilters(BuildContext context) async {
+  void _saveFilters(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('distance', _distance);
     await prefs.setString('category', _currentCategorySelected);
@@ -70,7 +70,6 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
-  //TODO: slider exponential
   Widget distanceSection() {
     return Column(
       children: <Widget>[
@@ -85,9 +84,9 @@ class _FilterPageState extends State<FilterPage> {
               _sliderValue = newValue;
               _distance = exp(pow((_sliderValue / 60), 2)) - 1;
               if (_distance > 15.0) {
-                _distanceString = '15km+';
+                _distanceString = '15 km +';
               } else {
-                _distanceString = _distance.toStringAsFixed(2) + 'km';
+                _distanceString = _distance.toStringAsFixed(2) + ' km';
               }
             });
           },
