@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
 class FilterPage extends StatefulWidget {
   @override
@@ -8,6 +9,8 @@ class FilterPage extends StatefulWidget {
 
 class _FilterPageState extends State<FilterPage> {
   double _distance = 0.0;
+  double _sliderValue = 0.0;
+  String _distanceString = '0 km';
 
   //TODO: use the enum categories
   List<String> _categories = ['All', 'Kitchen', 'Tools', 'Food', 'Electronics', 'Clothing', 'Consumable maintenance', 'Other'];
@@ -70,17 +73,22 @@ class _FilterPageState extends State<FilterPage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
         ),
         Slider(
-          value: _distance,
-          onChanged: (newDistance) {
+          value: _sliderValue,
+          onChanged: (newValue) {
             setState(() {
-              _distance = newDistance;
+              _sliderValue = newValue;
+              _distance = exp(pow((_sliderValue/60),2))-1;
+              if(_distance>15.0){
+                _distanceString = '15km+';
+              }else{
+                _distanceString = _distance.toStringAsFixed(2) + 'km';
+              }
             });
           },
           min: 0,
-          max: 10,
-          label: "_distance",
+          max: 100,
         ),
-        Text(_distance.toStringAsFixed(2) + 'km'),
+        Text(_distanceString),
       ],
     );
   }
