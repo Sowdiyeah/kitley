@@ -7,27 +7,27 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  var _distance = 0.0;
+  double _distance = 0.0;
 
   //TODO: use the enum categories
-  var _categories = ['Screwdrivers', 'Hammers', 'Other'];
-  var _currentCategorySelected = 'Screwdrivers';
+  List<String> _categories = ['All', 'Kitchen', 'Tools', 'Food', 'Electronics', 'Clothing', 'Consumable maintenance', 'Other'];
+  String _currentCategorySelected = 'All';
 
-  var _availabilities = ['Right now','Today', 'All'];
-  var _currentAvailabilitySelected = 'Right now';
+  List<String> _availabilities = ['Right now', 'Today', 'All'];
+  String _currentAvailabilitySelected = 'Right now';
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _loadFilters();
+    //_loadFilters();
   }
 
   _loadFilters() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _distance = (prefs.get('distance')??0);
-      _currentCategorySelected = (prefs.get('category')??'Screwdrivers');
-      _currentAvailabilitySelected = (prefs.get('availability')??'Right now');
+      _distance = (prefs.get('distance') ?? 0);
+      _currentCategorySelected = (prefs.get('category') ?? 'Screwdrivers');
+      _currentAvailabilitySelected = (prefs.get('availability') ?? 'Right now');
     });
   }
 
@@ -39,16 +39,39 @@ class _FilterPageState extends State<FilterPage> {
     Navigator.pop(context);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
 
-    //TODO: slider exponential
-    Widget distanceSection = Column(
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Filters')),
+      body: ListView(
+        children: [
+          SizedBox(height: 50),
+          distanceSection(),
+          SizedBox(height: 50),
+          categorySection(),
+          SizedBox(height: 50),
+          availabilitySection(),
+          SizedBox(height: 50),
+          saveButton(),
+        ],
+      ),
+    );
+  }
+  //TODO: slider exponential
+  Widget distanceSection() {
+    return Column(
       children: <Widget>[
-        Text('Distance',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+        Text(
+          'Distance',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        ),
         Slider(
           value: _distance,
-          onChanged: (newDistance){
+          onChanged: (newDistance) {
             setState(() {
               _distance = newDistance;
             });
@@ -60,50 +83,52 @@ class _FilterPageState extends State<FilterPage> {
         Text(_distance.toStringAsFixed(2) + 'km'),
       ],
     );
+  }
 
-    //TODO: include 'ALL' in category
-    Widget categorySection = Column(
+  Widget categorySection() {
+    return Column(
       children: <Widget>[
-        Text('Category',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+        Text('Category',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
         DropdownButton<String>(
-          items: _categories.map((String dropDownStringItem){
-            return DropdownMenuItem<String>(
-              value: dropDownStringItem,
-              child: Text(dropDownStringItem),
-            );
-          }).toList(),
-          onChanged: (String newCategorySelected){
-            setState((){
-              this._currentCategorySelected = newCategorySelected;
-            });
-          },
-          value: _currentCategorySelected,
-          icon: Icon(Icons.arrow_downward),
-          iconSize: 24,
-          elevation: 16,
-          style: TextStyle(
-            color: Colors.black, fontSize: 18
-          ),
-          underline: Container(
-            height: 2,
-            color: Colors.orange,
-          )
-        ),
-      ],
-    );
-
-    Widget availabilitySection = Column(
-      children: <Widget>[
-        Text('Availability',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-        DropdownButton<String>(
-            items: _availabilities.map((String dropDownStringItem){
+            items: _categories.map((String dropDownStringItem) {
               return DropdownMenuItem<String>(
                 value: dropDownStringItem,
                 child: Text(dropDownStringItem),
               );
             }).toList(),
-            onChanged: (String newCategorySelected){
-              setState((){
+            onChanged: (String newCategorySelected) {
+              setState(() {
+                this._currentCategorySelected = newCategorySelected;
+              });
+            },
+            value: _currentCategorySelected,
+            icon: Icon(Icons.arrow_downward),
+            iconSize: 24,
+            elevation: 16,
+            style: TextStyle(color: Colors.black, fontSize: 18),
+            underline: Container(
+              height: 2,
+              color: Colors.orange,
+            )),
+      ],
+    );
+  }
+
+  Widget availabilitySection() {
+    return Column(
+      children: <Widget>[
+        Text('Availability',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+        DropdownButton<String>(
+            items: _availabilities.map((String dropDownStringItem) {
+              return DropdownMenuItem<String>(
+                value: dropDownStringItem,
+                child: Text(dropDownStringItem),
+              );
+            }).toList(),
+            onChanged: (String newCategorySelected) {
+              setState(() {
                 this._currentAvailabilitySelected = newCategorySelected;
               });
             },
@@ -111,36 +136,20 @@ class _FilterPageState extends State<FilterPage> {
             icon: Icon(Icons.arrow_downward),
             iconSize: 24,
             elevation: 16,
-            style: TextStyle(
-                color: Colors.black, fontSize: 18
-            ),
+            style: TextStyle(color: Colors.black, fontSize: 18),
             underline: Container(
               height: 2,
               color: Colors.orange,
-            )
-        ),
+            )),
       ],
     );
+  }
 
-    Widget saveButton = FloatingActionButton(
+  Widget saveButton() {
+    return FloatingActionButton(
       child: Icon(Icons.check),
-      onPressed: _saveFilters(context),
-    );
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Filters')),
-      body: ListView(
-        children: [
-          SizedBox(height:50),
-          distanceSection,
-          SizedBox(height:50),
-          categorySection,
-          SizedBox(height:50),
-          availabilitySection,
-          SizedBox(height:50),
-          saveButton,
-        ],
-      ),
+      //onPressed: _saveFilters(context),
     );
   }
+
 }
