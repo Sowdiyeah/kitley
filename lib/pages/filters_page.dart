@@ -13,7 +13,16 @@ class _FilterPageState extends State<FilterPage> {
   String _distanceString = '0 km';
 
   //TODO: use the enum categories
-  List<String> _categories = ['All', 'Kitchen', 'Tools', 'Food', 'Electronics', 'Clothing', 'Consumable maintenance', 'Other'];
+  List<String> _categories = [
+    'All',
+    'Kitchen',
+    'Tools',
+    'Food',
+    'Electronics',
+    'Clothing',
+    'Consumable maintenance',
+    'Other',
+  ];
   String _currentCategorySelected = 'All';
 
   List<String> _availabilities = ['Right now', 'Today', 'All'];
@@ -42,12 +51,8 @@ class _FilterPageState extends State<FilterPage> {
     Navigator.pop(context);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(title: Text('Filters')),
       body: ListView(
@@ -59,11 +64,12 @@ class _FilterPageState extends State<FilterPage> {
           SizedBox(height: 50),
           availabilitySection(),
           SizedBox(height: 50),
-          saveButton(),
         ],
       ),
+      floatingActionButton: saveButton(),
     );
   }
+
   //TODO: slider exponential
   Widget distanceSection() {
     return Column(
@@ -77,10 +83,10 @@ class _FilterPageState extends State<FilterPage> {
           onChanged: (newValue) {
             setState(() {
               _sliderValue = newValue;
-              _distance = exp(pow((_sliderValue/60),2))-1;
-              if(_distance>15.0){
+              _distance = exp(pow((_sliderValue / 60), 2)) - 1;
+              if (_distance > 15.0) {
                 _distanceString = '15km+';
-              }else{
+              } else {
                 _distanceString = _distance.toStringAsFixed(2) + 'km';
               }
             });
@@ -156,8 +162,9 @@ class _FilterPageState extends State<FilterPage> {
   Widget saveButton() {
     return FloatingActionButton(
       child: Icon(Icons.check),
-      //onPressed: _saveFilters(context),
+      onPressed: () {
+        _saveFilters(context);
+      },
     );
   }
-
 }
