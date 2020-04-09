@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:kitley/template/item.dart';
 
@@ -10,6 +11,7 @@ class AddItemPage extends StatefulWidget {
 }
 
 class _AddItemPageState extends State<AddItemPage> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Item _item = Item();
 
@@ -26,7 +28,7 @@ class _AddItemPageState extends State<AddItemPage> {
           builder: (BuildContext context) {
             return IconButton(
               icon: Icon(Icons.save),
-              onPressed: () {
+              onPressed: () async {
                 FormState formState = _formKey.currentState;
                 if (formState.validate()) {
                   Scaffold.of(context).showSnackBar(
@@ -34,6 +36,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   );
 
                   formState.save();
+                  _item.owner = (await _prefs).getString('uid');
                   Firestore.instance
                       .collection('items')
                       .document()
@@ -55,7 +58,6 @@ class _AddItemPageState extends State<AddItemPage> {
         children: <Widget>[
           nameField(),
           brandField(),
-          ownerField(),
           LocationField(
             updateLocation: updateItem,
           ),
@@ -86,18 +88,6 @@ class _AddItemPageState extends State<AddItemPage> {
         labelText: 'Brand',
       ),
       onSaved: (String text) => _item.brand = text,
-    );
-  }
-
-  Widget ownerField() {
-    return TextFormField(
-      decoration: const InputDecoration(
-        icon: Icon(Icons.person),
-        hintText: 'Name for the item owner',
-        labelText: 'Owner name *',
-      ),
-      validator: (String text) => text.isEmpty ? 'Enter some text' : null,
-      onSaved: (String text) => _item.owner = text,
     );
   }
 
