@@ -12,7 +12,6 @@ class _FilterPageState extends State<FilterPage> {
   double _sliderValue = 0.0;
   String _distanceString = '0 km';
 
-  //TODO: use the enum categories
   List<String> _categories = [
     'All',
     'Kitchen',
