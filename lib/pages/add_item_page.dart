@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:kitley/template/item.dart';
 
@@ -11,7 +11,7 @@ class AddItemPage extends StatefulWidget {
 }
 
 class _AddItemPageState extends State<AddItemPage> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Future<FirebaseUser> _user = FirebaseAuth.instance.currentUser();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Item _item = Item();
 
@@ -36,7 +36,7 @@ class _AddItemPageState extends State<AddItemPage> {
                   );
 
                   formState.save();
-                  _item.owner = (await _prefs).getString('uid');
+                  _item.owner = (await _user).uid;
                   Firestore.instance
                       .collection('items')
                       .document()

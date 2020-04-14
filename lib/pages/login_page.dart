@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:kitley/pages/home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -37,9 +36,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _logIn() async {
-    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    GoogleSignInAccount googleUser;
+    try {
+      googleUser = await _googleSignIn.signIn();
+    } catch (e) {
+      print(' \n');
+      print(e);
+    }
     GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
@@ -49,14 +53,6 @@ class _LoginPageState extends State<LoginPage> {
     FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
 
     if (user == null) return;
-
-    // Set the values we need later in the app
-    await Future.wait([
-      prefs.setString('uid', user.uid),
-      prefs.setString('email', user.email),
-      prefs.setString('name', user.displayName),
-      prefs.setString('photoUrl', user.photoUrl),
-    ]);
 
     // Save to database if it is a new user
     List<DocumentSnapshot> documents = (await Firestore.instance

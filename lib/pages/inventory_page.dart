@@ -1,20 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class InventoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: SharedPreferences.getInstance(),
-      builder: (_, AsyncSnapshot<SharedPreferences> snapshot) {
+      future: FirebaseAuth.instance.currentUser(),
+      builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             return Center(child: Text('Loading....'));
           default:
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            return _itemList(snapshot.data.getString('uid'));
+            return _itemList(snapshot.data.uid);
         }
       },
     );
