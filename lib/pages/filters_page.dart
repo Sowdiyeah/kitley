@@ -50,6 +50,7 @@ class _FilterPageState extends State<FilterPage> {
     Navigator.pop(context);
   }
 
+class FilterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
