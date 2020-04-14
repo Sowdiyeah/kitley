@@ -14,18 +14,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: FutureBuilder(
-        future: FirebaseAuth.instance.currentUser(),
-        builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(child: Text('Loading....'));
-            default:
-              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-              if (snapshot.hasData) return HomePage();
-              return LoginPage();
-          }
-        },
+      home: Scaffold(
+        body: FutureBuilder(
+          future: FirebaseAuth.instance.currentUser(),
+          builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Center(child: Text('Loading....'));
+              default:
+                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+                if (snapshot.hasData) return HomePage();
+                return LoginPage();
+            }
+          },
+        ),
       ),
     );
   }
