@@ -23,6 +23,8 @@ class _HomePageState extends State<HomePage> {
     InventoryPage(),
     ChatPage(),
   ];
+  Future<FirebaseUser> _user = FirebaseAuth.instance.currentUser();
+  bool _showUserDetails = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,16 @@ class _HomePageState extends State<HomePage> {
                   : Container(),
         ],
       ),
-      drawer: _Drawer(),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            _buildDrawerHeader(),
+            Expanded(
+              child: _showUserDetails ? _buildUserDetail() : _buildDrawerList(),
+            ),
+          ],
+        ),
+      ),
       body: _widgetOptions[_selectedIndex],
       bottomNavigationBar: _buildBottomNavigationBar(context),
     );
@@ -79,36 +90,8 @@ class _HomePageState extends State<HomePage> {
           title: Text('Chat'),
         ),
       ],
-      onTap: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
+      onTap: _setIndex,
       currentIndex: _selectedIndex,
-    );
-  }
-}
-
-class _Drawer extends StatefulWidget {
-  @override
-  _DrawerState createState() => _DrawerState();
-}
-
-class _DrawerState extends State<_Drawer> {
-  Future<FirebaseUser> _user = FirebaseAuth.instance.currentUser();
-  bool _showUserDetails = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: <Widget>[
-          _buildDrawerHeader(),
-          Expanded(
-            child: _showUserDetails ? _buildUserDetail() : _buildDrawerList(),
-          ),
-        ],
-      ),
     );
   }
 
@@ -166,17 +149,26 @@ class _DrawerState extends State<_Drawer> {
         ListTile(
           leading: Icon(Icons.build),
           title: Text('Borrow'),
-          onTap: () {},
+          onTap: () {
+            Navigator.pop(context);
+            _setIndex(0);
+          },
         ),
         ListTile(
           leading: Icon(Icons.work),
           title: Text('Inventory'),
-          onTap: () {},
+          onTap: () {
+            Navigator.pop(context);
+            _setIndex(1);
+          },
         ),
         ListTile(
           leading: Icon(Icons.question_answer),
           title: Text('Chat'),
-          onTap: () {},
+          onTap: () {
+            Navigator.pop(context);
+            _setIndex(2);
+          },
         ),
         ListTile(
           leading: Icon(Icons.settings),
@@ -184,5 +176,11 @@ class _DrawerState extends State<_Drawer> {
         ),
       ],
     );
+  }
+
+  void _setIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }
