@@ -1,6 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
 
 class FilterPage extends StatefulWidget {
   @override
@@ -8,9 +9,10 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   double _distance = 0.0;
-  double _sliderValue = 0.0;
   String _distanceString = '0 km';
+  double _sliderValue = 0.0;
 
   List<String> _categories = [
     'All',
@@ -22,10 +24,10 @@ class _FilterPageState extends State<FilterPage> {
     'Consumable maintenance',
     'Other',
   ];
-  String _currentCategorySelected = 'All';
+  String _categorySelected = 'All';
 
   List<String> _availabilities = ['Right now', 'Today', 'All'];
-  String _currentAvailabilitySelected = 'Right now';
+  String _availabilitySelected = 'Right now';
 
   @override
   void initState() {
@@ -34,42 +36,46 @@ class _FilterPageState extends State<FilterPage> {
   }
 
   void _loadFilters() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await _prefs;
     setState(() {
-      _distance = (prefs.get('distance') ?? 0);
-      _currentCategorySelected = (prefs.get('category') ?? 'Screwdrivers');
-      _currentAvailabilitySelected = (prefs.get('availability') ?? 'Right now');
+      _setDistance(sqrt(log((prefs.getDouble('distance') ?? 0) + 1)) * 60);
+      _categorySelected = prefs.getString('category') ?? 'All';
+      _availabilitySelected = prefs.getString('availability') ?? 'Right now';
     });
   }
 
   void _saveFilters(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await _prefs;
     await prefs.setDouble('distance', _distance);
-    await prefs.setString('category', _currentCategorySelected);
-    await prefs.setString('availability', _currentAvailabilitySelected);
+    await prefs.setString('category', _categorySelected);
+    await prefs.setString('availability', _availabilitySelected);
     Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Filters')),
-      body: ListView(
-        children: [
-          SizedBox(height: 50),
-          distanceSection(),
-          SizedBox(height: 50),
-          categorySection(),
-          SizedBox(height: 50),
-          availabilitySection(),
-          SizedBox(height: 50),
+      appBar: AppBar(
+        title: Text('Filters'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () => _saveFilters(context),
+          )
         ],
       ),
-      floatingActionButton: saveButton(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _distanceSection(),
+          _categorySection(),
+          _availabilitySection(),
+        ],
+      ),
     );
   }
 
-  Widget distanceSection() {
+  Widget _distanceSection() {
     return Column(
       children: <Widget>[
         Text(
@@ -77,18 +83,8 @@ class _FilterPageState extends State<FilterPage> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
         ),
         Slider(
-          value: _sliderValue,
-          onChanged: (newValue) {
-            setState(() {
-              _sliderValue = newValue;
-              _distance = exp(pow((_sliderValue / 60), 2)) - 1;
-              if (_distance > 15.0) {
-                _distanceString = '15 km +';
-              } else {
-                _distanceString = _distance.toStringAsFixed(2) + ' km';
-              }
-            });
-          },
+          value: sqrt(log(_distance + 1)) * 60,
+          onChanged: _setDistance,
           min: 0,
           max: 100,
         ),
@@ -97,72 +93,59 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
-  Widget categorySection() {
+  void _setDistance(double value) {
+    setState(() {
+      _distance = exp(pow((value / 60), 2)) - 1;
+      if (_distance > 15.0) {
+        _distanceString = '15 km +';
+      } else {
+        _distanceString = _distance.toStringAsFixed(2) + ' km';
+      }
+    });
+  }
+
+  Widget _categorySection() {
     return Column(
       children: <Widget>[
-        Text('Category',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+        Text(
+          'Category',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        ),
         DropdownButton<String>(
-            items: _categories.map((String dropDownStringItem) {
-              return DropdownMenuItem<String>(
-                value: dropDownStringItem,
-                child: Text(dropDownStringItem),
-              );
-            }).toList(),
-            onChanged: (String newCategorySelected) {
-              setState(() {
-                this._currentCategorySelected = newCategorySelected;
-              });
-            },
-            value: _currentCategorySelected,
-            icon: Icon(Icons.arrow_downward),
-            iconSize: 24,
-            elevation: 16,
-            style: TextStyle(color: Colors.black, fontSize: 18),
-            underline: Container(
-              height: 2,
-              color: Colors.orange,
-            )),
+          items: _categories.map(_itemToWidgetItem).toList(),
+          onChanged: (newCategorySelected) {
+            setState(() => _categorySelected = newCategorySelected);
+          },
+          value: _categorySelected,
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
       ],
     );
   }
 
-  Widget availabilitySection() {
+  Widget _availabilitySection() {
     return Column(
       children: <Widget>[
-        Text('Availability',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+        Text(
+          'Availability',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+        ),
         DropdownButton<String>(
-            items: _availabilities.map((String dropDownStringItem) {
-              return DropdownMenuItem<String>(
-                value: dropDownStringItem,
-                child: Text(dropDownStringItem),
-              );
-            }).toList(),
-            onChanged: (String newCategorySelected) {
-              setState(() {
-                this._currentAvailabilitySelected = newCategorySelected;
-              });
-            },
-            value: _currentAvailabilitySelected,
-            icon: Icon(Icons.arrow_downward),
-            iconSize: 24,
-            elevation: 16,
-            style: TextStyle(color: Colors.black, fontSize: 18),
-            underline: Container(
-              height: 2,
-              color: Colors.orange,
-            )),
+          items: _availabilities.map(_itemToWidgetItem).toList(),
+          onChanged: (newCategorySelected) {
+            setState(() => _availabilitySelected = newCategorySelected);
+          },
+          value: _availabilitySelected,
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
       ],
     );
   }
 
-  Widget saveButton() {
-    return FloatingActionButton(
-      child: Icon(Icons.check),
-      onPressed: () {
-        _saveFilters(context);
-      },
+  DropdownMenuItem<String> _itemToWidgetItem(String item) {
+    return DropdownMenuItem<String>(
+      value: item,
+      child: Center(child: Text(item)),
     );
   }
 }
