@@ -27,16 +27,84 @@ class InventoryPage extends StatelessWidget {
           .limit(50)
           .where('owner', isEqualTo: uid)
           .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+      builder: (_, AsyncSnapshot<QuerySnapshot> ownerSnapshot) {
+        if (ownerSnapshot.hasError)
+          return Text('Error: ${ownerSnapshot.error}');
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (ownerSnapshot.connectionState == ConnectionState.waiting)
           return Center(child: CircularProgressIndicator());
+
+        return StreamBuilder(
+          stream: Firestore.instance
+              .collection('items')
+              .limit(50)
+              .where('possessor', isEqualTo: uid)
+              .snapshots(),
+          builder: (_, AsyncSnapshot possessorSnapshot) {
+            if (possessorSnapshot.hasError)
+              return Text('Error : ${possessorSnapshot.error}');
+
+            if (possessorSnapshot.connectionState == ConnectionState.waiting)
+              return Center(child: CircularProgressIndicator());
+
+            return _itemListView(
+                uid, ownerSnapshot.data, possessorSnapshot.data);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _itemListView(
+      String uid, QuerySnapshot owner, QuerySnapshot possesor) {
+    List<Widget> ownerList = owner.documents.map(documentToWidget).toList();
+    List<Widget> possessorList =
+        possesor.documents.map(documentToWidget).toList();
+
+    return ListView.builder(
+      itemCount: ownerList.length + possessorList.length + 2,
+      itemBuilder: (_, int index) {
+        if (index == 0) {
+          return Center(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Your items', style: TextStyle(fontSize: 32)),
+                ),
+                ownerList.isEmpty
+                    ? Text('You do not own any items.')
+                    : Container()
+              ],
+            ),
+          );
         }
 
-        return ListView(
-          children: snapshot.data.documents.map(documentToWidget).toList(),
-        );
+        // index >= 1
+        if (index <= ownerList.length) {
+          return ownerList[index - 1];
+        }
+
+        // index >= ownerList.length + 1
+        if (index == ownerList.length + 1) {
+          return Center(
+            child: Column(
+              children: <Widget>[
+                Divider(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Loaned items', style: TextStyle(fontSize: 32)),
+                ),
+                possessorList.isEmpty
+                    ? Text('You have no loaned items.')
+                    : Container()
+              ],
+            ),
+          );
+        }
+
+        // index >= ownerlist.length + 2
+        return possessorList[index - ownerList.length - 2];
       },
     );
   }
