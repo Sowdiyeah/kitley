@@ -24,8 +24,8 @@ class InventoryPage extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('items')
-          .limit(50)
           .where('owner', isEqualTo: uid)
+          .limit(50)
           .snapshots(),
       builder: (_, AsyncSnapshot<QuerySnapshot> ownerSnapshot) {
         if (ownerSnapshot.hasError)
@@ -37,8 +37,8 @@ class InventoryPage extends StatelessWidget {
         return StreamBuilder(
           stream: Firestore.instance
               .collection('items')
-              .limit(50)
               .where('possessor', isEqualTo: uid)
+              .limit(50)
               .snapshots(),
           builder: (_, AsyncSnapshot possessorSnapshot) {
             if (possessorSnapshot.hasError)
