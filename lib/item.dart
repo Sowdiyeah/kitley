@@ -49,11 +49,15 @@ class Item {
     bool locationEnabled = await Geolocator().isLocationServiceEnabled();
     if (!locationEnabled) return 'Enable your location service';
 
-    bool permissionGranted = GeolocationStatus.granted ==
-        await Geolocator().checkGeolocationPermissionStatus();
-    if (!permissionGranted) return 'Check your location permissions';
+    Position position;
+    try {
+      position = await Geolocator().getLastKnownPosition();
+      position = position ?? await Geolocator().getCurrentPosition();
+    } catch (e) {
+      print('Error: $e');
+    }
 
-    Position position = await Geolocator().getCurrentPosition();
+    if (position == null) return 'Check your location permissions';
     double distance = await Geolocator().distanceBetween(
       position.latitude,
       position.longitude,
