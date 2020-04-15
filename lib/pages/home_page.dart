@@ -9,7 +9,7 @@ import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/pages/inventory_page.dart';
 import 'package:kitley/pages/login_page.dart';
 import 'package:kitley/pages/search_page.dart';
-import 'package:kitley/template/search_delegate.dart';
+import 'package:kitley/search_delegate.dart';
 
 class HomePage extends StatefulWidget {
   @override
