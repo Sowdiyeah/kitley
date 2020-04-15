@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:kitley/pages/filters_page.dart';
+import 'package:kitley/search/filters_page.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   @override
