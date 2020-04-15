@@ -31,16 +31,13 @@ class _AddItemPageState extends State<AddItemPage> {
               onPressed: () async {
                 FormState formState = _formKey.currentState;
                 if (formState.validate()) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Data Saved')),
-                  );
-
                   formState.save();
                   _item.owner = (await _user).uid;
                   Firestore.instance
                       .collection('items')
                       .document()
                       .setData(_item.toMap());
+                  Navigator.of(context).pop();
                 }
               },
             );
