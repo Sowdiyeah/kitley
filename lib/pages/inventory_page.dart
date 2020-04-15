@@ -112,6 +112,7 @@ class InventoryPage extends StatelessWidget {
   Widget documentToWidget(DocumentSnapshot document) {
     return Dismissible(
       key: Key(document.documentID),
+      background: Container(color: Colors.red),
       onDismissed: (DismissDirection direction) {
         Firestore.instance
             .collection('items')
