@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kitley/item.dart';
 
 import 'package:kitley/search/filters_page.dart';
 
@@ -59,18 +60,10 @@ class CustomSearchDelegate extends SearchDelegate {
             return Center(child: Text('Loading...'));
           default:
             return ListView(
-              children:
-                  snapshot.data.documents.map((DocumentSnapshot document) {
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(),
-                    title: Text(document['name']),
-                    subtitle: Text(
-                        '${document['latitude']}, ${document['longitude']}'),
-                    onTap: () {},
-                  ),
-                );
-              }).toList(),
+              children: snapshot.data.documents
+                  .map((document) => Item.fromDocumentSnapshot(document))
+                  .map((item) => item.toWidget(() {}))
+                  .toList(),
             );
         }
       },
@@ -79,37 +72,6 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
-          .collection('items')
-          .where('name', isGreaterThanOrEqualTo: query)
-          .where('name', isLessThanOrEqualTo: query + '\uf8ff')
-          .limit(50)
-          .snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError)
-          return Center(child: Text('Error: ${snapshot.error}'));
-
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Container();
-          default:
-            return ListView(
-              children:
-                  snapshot.data.documents.map((DocumentSnapshot document) {
-                return Card(
-                  child: ListTile(
-                    leading: CircleAvatar(),
-                    title: Text(document['name']),
-                    subtitle: Text(
-                        '${document['latitude']}, ${document['longitude']}'),
-                    onTap: () {},
-                  ),
-                );
-              }).toList(),
-            );
-        }
-      },
-    );
+    return buildResults(context);
   }
 }
