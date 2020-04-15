@@ -6,7 +6,11 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('items').limit(50).snapshots(),
+      stream: Firestore.instance
+          .collection('items')
+          .where('possessor', isNull: true)
+          .limit(50)
+          .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
@@ -22,29 +26,20 @@ class SearchPage extends StatelessWidget {
   }
 
   Widget documentToWidget(DocumentSnapshot document) {
-    return Dismissible(
-      key: Key(document.documentID),
-      onDismissed: (DismissDirection direction) {
-        Firestore.instance
-            .collection('items')
-            .document(document.documentID)
-            .delete();
-      },
-      child: Card(
-        child: ListTile(
-          leading: CircleAvatar(),
-          title: Text(document['name']),
-          subtitle: FutureBuilder(
-            initialData: 'Loading...',
-            future: _distanceToDocument(document),
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(),
+        title: Text(document['name']),
+        subtitle: FutureBuilder(
+          initialData: 'Loading...',
+          future: _distanceToDocument(document),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
-              return Text(snapshot.data);
-            },
-          ),
-          onTap: () {},
+            return Text(snapshot.data);
+          },
         ),
+        onTap: () {},
       ),
     );
   }
