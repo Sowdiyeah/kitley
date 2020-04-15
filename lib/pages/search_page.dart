@@ -24,7 +24,11 @@ class SearchPage extends StatelessWidget {
         return ListView(
           children: snapshot.data.documents
               .map((document) => Item.fromDocumentSnapshot(document))
-              .map((item) => item.toWidget(() {}))
+              .map((item) => item.toWidget(() {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ShowItemPage(item: item),
+                    ));
+                  }))
               .toList(),
         );
       },
