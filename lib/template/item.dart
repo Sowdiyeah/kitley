@@ -12,7 +12,7 @@ class Item {
   String name;
   String owner;
   double penalty;
-  String posessor;
+  String possessor;
   String remarks;
   Timestamp timestamp;
 
@@ -24,7 +24,7 @@ class Item {
       'owner': owner,
       'item_position': GeoPoint(latitude, longitude),
       'penalty': penalty,
-      'posessor': posessor,
+      'possessor': possessor,
       'remarks': remarks,
       'timestamp': timestamp,
     };
