@@ -11,8 +11,6 @@ class FilterPage extends StatefulWidget {
 class _FilterPageState extends State<FilterPage> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   double _distance = 0.0;
-  String _distanceString = '0 km';
-  double _sliderValue = 0.0;
 
   List<String> _categories = [
     'All',
@@ -88,7 +86,9 @@ class _FilterPageState extends State<FilterPage> {
           min: 0,
           max: 100,
         ),
-        Text(_distanceString),
+        Text(_distance > 15.0
+            ? '15 km +'
+            : _distance.toStringAsFixed(2) + ' km'),
       ],
     );
   }
@@ -96,11 +96,6 @@ class _FilterPageState extends State<FilterPage> {
   void _setDistance(double value) {
     setState(() {
       _distance = exp(pow((value / 60), 2)) - 1;
-      if (_distance > 15.0) {
-        _distanceString = '15 km +';
-      } else {
-        _distanceString = _distance.toStringAsFixed(2) + ' km';
-      }
     });
   }
 
