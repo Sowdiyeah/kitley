@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:kitley/item.dart';
 
 import 'package:kitley/search/filters_page.dart';
+import 'package:kitley/utils/location_util.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   @override
@@ -59,11 +61,23 @@ class CustomSearchDelegate extends SearchDelegate {
           case ConnectionState.waiting:
             return Center(child: Text('Loading...'));
           default:
-            return ListView(
-              children: snapshot.data.documents
-                  .map((document) => Item.fromDocumentSnapshot(document))
-                  .map((item) => item.toWidget(() {}))
-                  .toList(),
+            return FutureBuilder(
+              future: getLocation(),
+              builder: (_, AsyncSnapshot<Position> positionSnapshot) {
+                switch (positionSnapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return Container();
+                  default:
+                    if (positionSnapshot.hasError) return Container();
+                }
+                return ListView(
+                  children: snapshot.data.documents
+                      .map((document) => Item.fromDocumentSnapshot(document))
+                      .map(
+                          (item) => item.toWidget(positionSnapshot.data, () {}))
+                      .toList(),
+                );
+              },
             );
         }
       },

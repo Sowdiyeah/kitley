@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:kitley/item.dart';
+import 'package:kitley/utils/location_util.dart';
 
 class InventoryPage extends StatelessWidget {
   @override
@@ -16,13 +17,26 @@ class InventoryPage extends StatelessWidget {
             return Center(child: Text('Loading....'));
           default:
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            return _itemList(snapshot.data.uid);
         }
+
+        return FutureBuilder(
+          future: getLocation(),
+          builder: (_, AsyncSnapshot<Position> positionSnapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return _itemList(snapshot.data.uid, null);
+              default:
+                if (snapshot.hasError)
+                  return _itemList(snapshot.data.uid, null);
+            }
+            return _itemList(snapshot.data.uid, positionSnapshot.data);
+          },
+        );
       },
     );
   }
 
-  Widget _itemList(String uid) {
+  Widget _itemList(String uid, Position myPosition) {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('items')
@@ -38,7 +52,8 @@ class InventoryPage extends StatelessWidget {
 
         List<Widget> ownedItems = ownerSnapshot.data.documents
             .map((document) => Item.fromDocumentSnapshot(document))
-            .map((item) => item.toWidget(() {}))
+            .map((item) => item.toWidget(myPosition, () {}))
+            // .map((item) => _dismissibleItem(item))
             .toList();
 
         return StreamBuilder(
@@ -56,7 +71,7 @@ class InventoryPage extends StatelessWidget {
 
             List<Widget> possessedItems = possessorSnapshot.data.documents
                 .map((document) => Item.fromDocumentSnapshot(document))
-                .map((item) => item.toWidget(() {}))
+                .map((item) => item.toWidget(myPosition, () {}))
                 .toList();
 
             return _itemListView(ownedItems, possessedItems);
@@ -114,4 +129,18 @@ class InventoryPage extends StatelessWidget {
       },
     );
   }
+
+  // Widget _dismissibleItem(Widget card) {
+  //   return Dismissible(
+  //     key: Key('${card.hashCode}'),
+  //     background: Container(color: Colors.red),
+  //     onDismissed: (DismissDirection direction) {
+  //       Firestore.instance
+  //           .collection('items')
+  //           .document(document.documentID)
+  //           .delete();
+  //     },
+  //     child: card,
+  //   );
+  // }
 }

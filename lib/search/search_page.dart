@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:kitley/item.dart';
 import 'package:kitley/pages/show_item_page.dart';
+import 'package:kitley/utils/location_util.dart';
 
 class SearchPage extends StatelessWidget {
   @override
@@ -20,16 +21,26 @@ class SearchPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }
-
-        return ListView(
-          children: snapshot.data.documents
-              .map((document) => Item.fromDocumentSnapshot(document))
-              .map((item) => item.toWidget(() {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ShowItemPage(item: item),
-                    ));
-                  }))
-              .toList(),
+        return FutureBuilder(
+          future: getLocation(),
+          builder: (_, AsyncSnapshot<Position> positionSnapshot) {
+            switch (positionSnapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Container();
+              default:
+                if (positionSnapshot.hasError) return Container();
+            }
+            return ListView(
+              children: snapshot.data.documents
+                  .map((document) => Item.fromDocumentSnapshot(document))
+                  .map((item) => item.toWidget(positionSnapshot.data, () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => ShowItemPage(item: item),
+                        ));
+                      }))
+                  .toList(),
+            );
+          },
         );
       },
     );

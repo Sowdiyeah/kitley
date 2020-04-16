@@ -45,46 +45,37 @@ class Item {
     };
   }
 
-  Future<String> distanceToItem() async {
-    bool locationEnabled = await Geolocator().isLocationServiceEnabled();
-    if (!locationEnabled) return 'Enable your location service';
-
-    Position position;
-    try {
-      position = await Geolocator().getLastKnownPosition();
-      position = position ?? await Geolocator().getCurrentPosition();
-    } catch (e) {
-      print('Error: $e');
-    }
-
-    if (position == null) return 'Check your location permissions';
-    double distance = await Geolocator().distanceBetween(
+  Future<double> distanceTo(Position position) async {
+    if (position == null) return null;
+    return await Geolocator().distanceBetween(
       position.latitude,
       position.longitude,
       latitude,
       longitude,
     );
-
-    // distance is in meters
-    if (distance < 1000) return '${distance.toStringAsFixed(0)} meter';
-    distance /= 1000;
-    // distance is now in kilometers
-    if (distance < 20) return '${(distance).toStringAsFixed(1)} km';
-    return '${(distance).toStringAsFixed(0)} km';
   }
 
-  Widget toWidget(void Function() onTap) {
+  Widget toWidget(Position myPosition, void Function() onTap) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(),
         title: Text(name),
         subtitle: FutureBuilder(
-          initialData: 'Loading...',
-          future: distanceToItem(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          initialData: -1.0,
+          future: distanceTo(myPosition),
+          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
-            return Text(snapshot.data);
+            double distance = snapshot.data;
+            if (distance == null) return Text('Enable location services');
+            if (distance == -1.0) return Container();
+            // distance is in meters
+            if (distance < 1000)
+              return Text('${distance.toStringAsFixed(0)} meter');
+            distance /= 1000;
+            // distance is now in kilometers
+            if (distance < 20) return Text('${distance.toStringAsFixed(1)} km');
+            return Text('${distance.toStringAsFixed(0)} km');
           },
         ),
         onTap: onTap,
