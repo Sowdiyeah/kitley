@@ -17,25 +17,29 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text('Login Page'),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/intro.png"),
+          fit: BoxFit.cover,
         ),
       ),
-      body: Center(
-        child: Builder(builder: (BuildContext context) {
-          return RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            color: Colors.red,
-            child: _isButtonDisabled
-                ? Text('Logging in...')
-                : Text('Login with Google'),
-            onPressed: _isButtonDisabled ? null : () => _logIn(context),
-          );
-        }),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Builder(builder: (BuildContext context) {
+            return RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              color: Colors.red,
+              child: _isButtonDisabled
+                  ? Text('Logging in...')
+                  : Text('Login with Google'),
+              onPressed: _isButtonDisabled ? null : () => _logIn(context),
+            );
+          }),
+        ),
       ),
     );
   }
