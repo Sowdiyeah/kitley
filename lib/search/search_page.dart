@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'package:kitley/item.dart';
+import 'package:kitley/utils/item.dart';
 import 'package:kitley/pages/show_item_page.dart';
 import 'package:kitley/utils/location_util.dart';
 

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
-import 'package:kitley/item.dart';
+import 'package:kitley/utils/item.dart';
 
 class AddItemPage extends StatefulWidget {
   @override

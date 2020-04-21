@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:kitley/item.dart';
+import 'package:kitley/utils/item.dart';
 
 class ShowItemPage extends StatelessWidget {
   final Item _item;
