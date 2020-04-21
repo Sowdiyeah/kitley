@@ -27,7 +27,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        filter: ImageFilter.blur(
+          sigmaX: _isButtonDisabled ? 0 : 4,
+          sigmaY: _isButtonDisabled ? 0 : 4,
+        ),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
