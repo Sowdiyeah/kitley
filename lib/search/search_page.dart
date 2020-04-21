@@ -9,7 +9,7 @@ import 'package:kitley/utils/location_util.dart';
 class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder(
       stream: Firestore.instance
           .collection('items')
           .where('possessor', isNull: true)
