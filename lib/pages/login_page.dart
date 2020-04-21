@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,21 +26,24 @@ class _LoginPageState extends State<LoginPage> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Center(
-          child: Builder(builder: (BuildContext context) {
-            return RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-              color: Colors.red,
-              child: _isButtonDisabled
-                  ? Text('Logging in...')
-                  : Text('Login with Google'),
-              onPressed: _isButtonDisabled ? null : () => _logIn(context),
-            );
-          }),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: Builder(builder: (BuildContext context) {
+              return RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+                color: Colors.red,
+                child: _isButtonDisabled
+                    ? Text('Logging in...')
+                    : Text('Login with Google'),
+                onPressed: _isButtonDisabled ? null : () => _logIn(context),
+              );
+            }),
+          ),
         ),
       ),
     );
