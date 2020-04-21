@@ -31,31 +31,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Kitley'),
-        actions: <Widget>[
-          _selectedIndex == 0
-              ? IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate: CustomSearchDelegate(),
-                    );
-                  },
-                )
-              : _selectedIndex == 1
-                  ? IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddItemPage(),
-                          ),
-                        );
-                      },
-                    )
-                  : Container(),
-        ],
+        actions: _buildScaffoldActions(context),
       ),
       drawer: Drawer(
         child: Column(
@@ -70,6 +46,39 @@ class _HomePageState extends State<HomePage> {
       body: _widgetOptions[_selectedIndex],
       bottomNavigationBar: _buildBottomNavigationBar(context),
     );
+  }
+
+  List<Widget> _buildScaffoldActions(BuildContext context) {
+    switch (_selectedIndex) {
+      case 0:
+        return [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: CustomSearchDelegate(),
+              );
+            },
+          ),
+        ];
+      case 1:
+        return [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddItemPage(),
+                ),
+              );
+            },
+          ),
+        ];
+      default:
+        return [Container()];
+    }
   }
 
   BottomNavigationBar _buildBottomNavigationBar(BuildContext context) {
