@@ -22,7 +22,7 @@ class InventoryPage extends StatelessWidget {
         return FutureBuilder(
           future: getLocation(),
           builder: (_, AsyncSnapshot<Position> positionSnapshot) {
-            switch (snapshot.connectionState) {
+            switch (positionSnapshot.connectionState) {
               case ConnectionState.waiting:
                 return _itemList(snapshot.data.uid, null);
               default:
