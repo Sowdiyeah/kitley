@@ -82,12 +82,13 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _messageBuilder(int index, Message message, int myHash) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: message.idFrom == myHash
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: <Widget>[
         Container(
           child: Text(message.content),
           padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-          // width: 200.0,
           decoration: BoxDecoration(
             color: Colors.grey,
             borderRadius: BorderRadius.circular(8.0),
@@ -95,6 +96,7 @@ class _ChatPageState extends State<ChatPage> {
           margin: EdgeInsets.only(
             bottom: index == 0 ? 10.0 : 20.0,
             right: 10.0,
+            left: 10.0,
           ),
         ),
       ],
