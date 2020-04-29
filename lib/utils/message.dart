@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Message {
-  String idFrom;
-  String idTo;
+  int idFrom;
+  int idTo;
   int timestamp; // milisecondsSinceEpoch
   String content;
 
@@ -29,7 +29,7 @@ class Message {
   upload() {
     Firestore.instance
         .collection('chats')
-        .document('${idFrom.hashCode + idTo.hashCode}')
+        .document('${idFrom + idTo}')
         .collection('messages')
         .document()
         .setData(toMap());

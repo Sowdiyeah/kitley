@@ -31,11 +31,9 @@ class _ChatPageState extends State<ChatPage> {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
               User myUser = User.fromFireBaseUser(snapshot.data);
-              String chatId =
-                  '${myUser.uid.hashCode + widget.otherUser.uid.hashCode}';
               return Column(
                 children: <Widget>[
-                  chatList(chatId),
+                  chatList(myUser, widget.otherUser),
                   Divider(height: 1.0),
                   Composer(myUser: myUser, otherUser: widget.otherUser),
                 ],
@@ -46,7 +44,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget chatList(String chatId) {
+  Widget chatList(User myUser, User otherUser) {
+    String chatId = '${myUser.uid.hashCode + widget.otherUser.uid.hashCode}';
+
     return Flexible(
       child: StreamBuilder(
         stream: Firestore.instance
@@ -66,19 +66,38 @@ class _ChatPageState extends State<ChatPage> {
                 .map<Message>(
                     (snapshot) => Message.fromDocumentSnapshot(snapshot))
                 .toList();
-            messages.map((e) => print(e.content));
 
             return ListView.builder(
               padding: EdgeInsets.all(8.0),
               reverse: true,
-              itemBuilder: (_, int index) {
-                return Text('${messages[index].content}');
-              },
+              itemBuilder: (_, int index) =>
+                  _messageBuilder(index, messages[index], myUser.uid.hashCode),
               itemCount: messages.length,
             );
           }
         },
       ),
+    );
+  }
+
+  Widget _messageBuilder(int index, Message message, int myHash) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Container(
+          child: Text(message.content),
+          padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+          // width: 200.0,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          margin: EdgeInsets.only(
+            bottom: index == 0 ? 10.0 : 20.0,
+            right: 10.0,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -134,8 +153,8 @@ class _ComposerState extends State<Composer> {
 
   void _handleSubmitted(String text) {
     Message message = Message()
-      ..idFrom = widget.myUser.uid
-      ..idTo = widget.otherUser.uid
+      ..idFrom = widget.myUser.uid.hashCode
+      ..idTo = widget.otherUser.uid.hashCode
       ..content = text;
 
     message.upload();
