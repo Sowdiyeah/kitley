@@ -3,6 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 
 class Item {
+  String brand;
+  String category;
+  double latitude;
+  double longitude;
+  String name;
+  String owner;
+  double penalty;
+  String possessor;
+  String remarks;
+  Timestamp timestamp;
+
   Item() {
     timestamp = Timestamp.now();
   }
@@ -19,17 +30,6 @@ class Item {
     remarks = document['remarks'];
     timestamp = document['timestamp'];
   }
-
-  String brand;
-  String category;
-  double latitude;
-  double longitude;
-  String name;
-  String owner;
-  double penalty;
-  String possessor;
-  String remarks;
-  Timestamp timestamp;
 
   Map<String, dynamic> toMap() {
     return {
