@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:kitley/pages/add_item_page.dart';
-import 'package:kitley/pages/chat_page.dart';
+import 'package:kitley/pages/chat_overview_page.dart';
 import 'package:kitley/pages/inventory_page.dart';
 import 'package:kitley/pages/login_page.dart';
 import 'package:kitley/search/search_page.dart';
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = <Widget>[
     SearchPage(),
     InventoryPage(),
-    ChatPage(),
+    ChatOverviewPage(),
   ];
   Future<FirebaseUser> _user = FirebaseAuth.instance.currentUser();
   bool _showUserDetails = false;

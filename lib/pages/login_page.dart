@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:kitley/pages/home_page.dart';
+import 'package:kitley/utils/user.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -83,19 +84,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    User user = User.fromFireBaseUser(result.user);
+
     // Save to database if it is a new user
     List<DocumentSnapshot> documents = (await Firestore.instance
             .collection('users')
-            .where('id', isEqualTo: result.user.uid)
+            .where('id', isEqualTo: user.uid)
             .getDocuments())
         .documents;
     if (documents.isEmpty) {
-      Firestore.instance.collection('users').document(result.user.uid).setData({
-        'name': result.user.displayName,
-        'photoUrl': result.user.photoUrl,
-        'uid': result.user.uid,
-        'email': result.user.email,
-      });
+      Firestore.instance
+          .collection('users')
+          .document(user.uid)
+          .setData(user.toMap());
     }
 
     Navigator.of(context).pushReplacement(
