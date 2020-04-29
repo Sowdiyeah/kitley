@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:kitley/pages/chat_page.dart';
+import 'package:kitley/utils/user.dart';
 
 class ChatOverviewPage extends StatelessWidget {
   @override
@@ -14,10 +15,14 @@ class ChatOverviewPage extends StatelessWidget {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         } else {
+          List<User> users = snapshot.data.documents
+              .map<User>((snapshot) => User.fromDocumentSnapshot(snapshot))
+              .toList();
+
           return ListView.builder(
-            itemCount: snapshot.data.documents.length,
+            itemCount: users.length,
             itemBuilder: (BuildContext context, int index) {
-              return _buildChatItem(context, snapshot.data.documents[index]);
+              return _buildChatItem(context, users[index]);
             },
           );
         }
@@ -25,15 +30,15 @@ class ChatOverviewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChatItem(BuildContext context, DocumentSnapshot document) {
+  Widget _buildChatItem(BuildContext context, User user) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(),
-        title: Text('${document.data['name']}'),
+        title: Text(user.name),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChatPage(
-              contactName: '${document.data['name']}',
+              contact: user,
             ),
           ));
         },
