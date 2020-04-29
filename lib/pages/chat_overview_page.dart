@@ -38,7 +38,7 @@ class ChatOverviewPage extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => ChatPage(
-              contact: user,
+              otherUser: user,
             ),
           ));
         },
