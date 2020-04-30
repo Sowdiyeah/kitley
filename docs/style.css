@@ -18,7 +18,7 @@ body
 }
 .navbar
 {
-	background-image: linear-gradient(to right, #ff9800, #fdf276 );
+	background-image: linear-gradient(to right, #ff9800	,#ff9800 );
 	padding:0 !important;
 }
 
@@ -36,8 +36,9 @@ body
 
 .navbar-nav li a
 {
-	color: #fff !important;
-	font-weight: 600;
+	color: #000 !important;
+	font-weight: 800;
+	font-size: 20;
 	float: right;
 	text-align: left;
 }
@@ -69,10 +70,12 @@ body
 	margin-top: 100px;
 }
 
+
 /*-----features section---*/
 #features
 {
 	padding:80px;
+	background: #F5F5F5;
 }
 
 .feature-img
@@ -96,7 +99,27 @@ body
 .title::before
 {
 	content: '';
-	back
+	background: #ff9800;
+	height: 5px;
+	width: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	transform: translateY(63px);
+
+}
+.title::after
+{
+	content: '';
+	background: #ff9800;
+	height: 10px;
+	width: 50px;
+	margin-bottom: auto;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	transform: translateY(8px);
+
 }
 
 /*-----social media stuff----*/
@@ -119,8 +142,9 @@ body
 	padding:20px;
 }
 
+/*------commercial--------*/
 
 #commercial
 {
-	background: #F5F5F5;
+	/*background: #F5F5F5;*/
 }
