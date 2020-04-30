@@ -81,16 +81,20 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _messageBuilder(int index, Message message, int myHash) {
+    bool isMyMessage = message.idFrom == myHash;
     return Row(
-      mainAxisAlignment: message.idFrom == myHash
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
+      mainAxisAlignment:
+          isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: <Widget>[
         Container(
-          child: Text(message.content),
+          child: Text(
+            message.content,
+          ),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
           padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
           decoration: BoxDecoration(
-            color: Colors.grey,
+            color: isMyMessage ? Colors.blue[200] : Colors.grey[200],
             borderRadius: BorderRadius.circular(8.0),
           ),
           margin: EdgeInsets.only(
