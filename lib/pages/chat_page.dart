@@ -154,6 +154,8 @@ class _ComposerState extends State<Composer> {
   }
 
   void _handleSubmitted(String text) {
+    _textController.clear();
+
     Message message = Message()
       ..idFrom = widget.myUser.uid.hashCode
       ..idTo = widget.otherUser.uid.hashCode
