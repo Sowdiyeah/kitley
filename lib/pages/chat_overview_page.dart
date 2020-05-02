@@ -45,14 +45,14 @@ class ChatOverviewPage extends StatelessWidget {
             ),
           );
         } else {
-          List<User> users = snapshot.data.documents
-              .map<User>((snapshot) => User.fromDocumentSnapshot(snapshot))
+          List<String> userIds = snapshot.data.documents
+              .map((snapshot) => snapshot.documentID)
               .toList();
 
           return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildChatItem(context, myUser, users[index]);
+            itemCount: userIds.length,
+            itemBuilder: (_, int index) {
+              return _buildChatItem(myUser, userIds[index]);
             },
           );
         }
@@ -60,20 +60,34 @@ class ChatOverviewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildChatItem(BuildContext context, User myUser, User otherUser) {
-    return Card(
-      child: ListTile(
-        leading: CircleAvatar(),
-        title: Text(otherUser.name),
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => ChatPage(
-              myUser: myUser,
-              otherUser: otherUser,
-            ),
-          ));
-        },
-      ),
+  Widget _buildChatItem(User myUser, String userId) {
+    return FutureBuilder(
+      future: Firestore.instance.collection('users').document(userId).get(),
+      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Container();
+          default:
+            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        }
+        User otherUser = User.fromDocumentSnapshot(snapshot.data);
+        return Card(
+          child: ListTile(
+            leading: CircleAvatar(),
+            title: Text(otherUser.name),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ChatPage(
+                    myUser: myUser,
+                    otherUser: otherUser,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
