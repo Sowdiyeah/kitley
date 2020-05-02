@@ -1,51 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:kitley/utils/message.dart';
 import 'package:kitley/utils/user.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatPage extends StatelessWidget {
+  final User myUser;
   final User otherUser;
 
-  const ChatPage({Key key, @required this.otherUser}) : super(key: key);
-
-  @override
-  _ChatPageState createState() => _ChatPageState();
-}
-
-class _ChatPageState extends State<ChatPage> {
-  Future<FirebaseUser> _myUser = FirebaseAuth.instance.currentUser();
+  const ChatPage({
+    Key key,
+    @required this.myUser,
+    @required this.otherUser,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.otherUser.name)),
-      body: FutureBuilder(
-        future: _myUser,
-        builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(child: Text('Loading....'));
-            default:
-              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-
-              User myUser = User.fromFireBaseUser(snapshot.data);
-              return Column(
-                children: <Widget>[
-                  chatList(myUser, widget.otherUser),
-                  Divider(height: 1.0),
-                  Composer(myUser: myUser, otherUser: widget.otherUser),
-                ],
-              );
-          }
-        },
+      appBar: AppBar(title: Text(otherUser.name)),
+      body: Column(
+        children: <Widget>[
+          _buildMessageList(context, myUser, otherUser),
+          Divider(height: 1.0),
+          Composer(myUser: myUser, otherUser: otherUser),
+        ],
       ),
     );
   }
 
-  Widget chatList(User myUser, User otherUser) {
-    String chatId = '${myUser.uid.hashCode + widget.otherUser.uid.hashCode}';
+  Widget _buildMessageList(BuildContext context, User myUser, User otherUser) {
+    String chatId = '${myUser.uid.hashCode + otherUser.uid.hashCode}';
 
     return Flexible(
       child: StreamBuilder(
@@ -70,8 +54,12 @@ class _ChatPageState extends State<ChatPage> {
             return ListView.builder(
               padding: EdgeInsets.all(8.0),
               reverse: true,
-              itemBuilder: (_, int index) =>
-                  _messageBuilder(index, messages[index], myUser.uid.hashCode),
+              itemBuilder: (_, int index) => _messageBuilder(
+                context,
+                index,
+                messages[index],
+                myUser.uid.hashCode,
+              ),
               itemCount: messages.length,
             );
           }
@@ -80,7 +68,8 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _messageBuilder(int index, Message message, int myHash) {
+  Widget _messageBuilder(
+      BuildContext context, int index, Message message, int myHash) {
     bool isMyMessage = message.idFrom == myHash;
     return Row(
       mainAxisAlignment:
@@ -90,8 +79,9 @@ class _ChatPageState extends State<ChatPage> {
           child: Text(
             message.content,
           ),
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
           padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
           decoration: BoxDecoration(
             color: isMyMessage ? Colors.blue[200] : Colors.grey[200],
