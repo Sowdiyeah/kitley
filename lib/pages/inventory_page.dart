@@ -55,11 +55,16 @@ class InventoryPage extends StatelessWidget {
             .map((item) => item.toWidget(
                   myPosition,
                   () {},
+                  (_) {
+                    Firestore.instance
+                        .collection('items')
+                        .document(item.itemId)
+                        .delete();
+                  },
                   Text(item.possessor != null
                       ? 'loaned to: ${item.possessor}'
                       : 'not loaned out'),
                 ))
-            // .map((item) => _dismissibleItem(item))
             .toList();
 
         return StreamBuilder(
@@ -80,7 +85,11 @@ class InventoryPage extends StatelessWidget {
                 .map((item) => item.toWidget(
                       myPosition,
                       () {},
-                      Text('owned by: ${item.owner}'),
+                      (_) {
+                        Item newItem = item..possessor = null;
+                        newItem.update();
+                      },
+                      Text('from: ${item.owner.substring(0, 15)}'),
                     ))
                 .toList();
 
@@ -139,18 +148,4 @@ class InventoryPage extends StatelessWidget {
       },
     );
   }
-
-  // Widget _dismissibleItem(Widget card) {
-  //   return Dismissible(
-  //     key: Key('${card.hashCode}'),
-  //     background: Container(color: Colors.red),
-  //     onDismissed: (DismissDirection direction) {
-  //       Firestore.instance
-  //           .collection('items')
-  //           .document(document.documentID)
-  //           .delete();
-  //     },
-  //     child: card,
-  //   );
-  // }
 }

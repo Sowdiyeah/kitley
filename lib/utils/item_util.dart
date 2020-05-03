@@ -58,6 +58,7 @@ class ItemBuilder extends StatelessWidget {
         return item.toWidget(
           myPosition,
           () => onTap(context, item),
+          null,
           Row(
             mainAxisSize: MainAxisSize.min,
             children: List.generate(
