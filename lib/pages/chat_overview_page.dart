@@ -33,10 +33,20 @@ class ChatOverviewPage extends StatelessWidget {
 
         if (snapshot.data.documents.isEmpty) {
           return Center(
-            child: Text(
-              'No active chats yet.',
-              style: TextStyle(fontSize: 32),
-              textAlign: TextAlign.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'No active chats.',
+                  style: TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Click on an item in the "Borrow"' +
+                      ' section to start chatting!',
+                  textAlign: TextAlign.center,
+                )
+              ],
             ),
           );
         } else {

@@ -35,6 +35,25 @@ class ItemBuilder extends StatelessWidget {
         if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator());
 
+        if (snapshot.data.documents.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'No items listed.',
+                  style: TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  'Go to the "Inventory" section to add an item.',
+                  textAlign: TextAlign.center,
+                )
+              ],
+            ),
+          );
+        }
+
         return FutureBuilder(
           future: getLocation(),
           builder: (_, AsyncSnapshot<Position> positionSnapshot) {

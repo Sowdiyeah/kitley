@@ -92,6 +92,8 @@ class InventoryPage extends StatelessWidget {
   }
 
   Widget _itemListView(List<Widget> ownedItems, List<Widget> possessedItems) {
+    if (ownedItems.isEmpty && possessedItems.isEmpty) return _infoView();
+
     return ListView.builder(
       itemCount: ownedItems.length + possessedItems.length + 2,
       itemBuilder: (_, int index) {
@@ -101,10 +103,15 @@ class InventoryPage extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Your items', style: TextStyle(fontSize: 32)),
+                  child: Text('Your items', style: TextStyle(fontSize: 24)),
                 ),
                 ownedItems.isEmpty
-                    ? Text('You do not own any items.')
+                    ? Text(
+                        'You have not added any items in Kitley yet.\n' +
+                            'Press the "+" icon in the top right corner to' +
+                            ' add an item.',
+                        textAlign: TextAlign.center,
+                      )
                     : Container()
               ],
             ),
@@ -112,9 +119,7 @@ class InventoryPage extends StatelessWidget {
         }
 
         // index >= 1
-        if (index <= ownedItems.length) {
-          return ownedItems[index - 1];
-        }
+        if (index <= ownedItems.length) return ownedItems[index - 1];
 
         // index >= ownedItems.length + 1
         if (index == ownedItems.length + 1) {
@@ -124,10 +129,15 @@ class InventoryPage extends StatelessWidget {
                 Divider(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Loaned items', style: TextStyle(fontSize: 32)),
+                  child: Text('Borrowed items', style: TextStyle(fontSize: 24)),
                 ),
                 possessedItems.isEmpty
-                    ? Text('You have no loaned items.')
+                    ? Text(
+                        'You have no loaned items.\n' +
+                            'Go to the "Borrow" section to start ' +
+                            'borrowing items.',
+                        textAlign: TextAlign.center,
+                      )
                     : Container()
               ],
             ),
@@ -137,6 +147,26 @@ class InventoryPage extends StatelessWidget {
         // index >= ownedItems.length + 2
         return possessedItems[index - ownedItems.length - 2];
       },
+    );
+  }
+
+  Widget _infoView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            'No items in inventory.',
+            style: TextStyle(fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            'Borrow an item in the "Borrow" section\n' +
+                'or press the "+" icon in the top right corner to add an item.',
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
     );
   }
 }
