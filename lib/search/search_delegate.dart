@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:kitley/pages/show_item_page.dart';
-import 'package:kitley/utils/item.dart';
+import 'package:kitley/search/search_page.dart';
 import 'package:kitley/search/filters_page.dart';
-import 'package:kitley/utils/item_util.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   @override
@@ -53,18 +51,11 @@ class CustomSearchDelegate extends SearchDelegate {
           .where('name', isLessThanOrEqualTo: query.toLowerCase() + '\uf8ff')
           .limit(50)
           .snapshots(),
-      onItemTap: onItemTap,
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     return buildResults(context);
-  }
-
-  void onItemTap(BuildContext context, Item item) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => ShowItemPage(item: item),
-    ));
   }
 }
