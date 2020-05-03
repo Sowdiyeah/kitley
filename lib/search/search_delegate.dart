@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kitley/utils/item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:kitley/search/search_page.dart';
 import 'package:kitley/search/filters_page.dart';
-import 'package:kitley/utils/item_util.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   @override
@@ -48,20 +47,15 @@ class CustomSearchDelegate extends SearchDelegate {
     return ItemBuilder(
       stream: Firestore.instance
           .collection('items')
-          .where('name', isGreaterThanOrEqualTo: query)
-          .where('name', isLessThanOrEqualTo: query + '\uf8ff')
+          .where('name', isGreaterThanOrEqualTo: query.toUpperCase())
+          .where('name', isLessThanOrEqualTo: query.toLowerCase() + '\uf8ff')
           .limit(50)
           .snapshots(),
-      onItemTap: onItemTap,
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     return buildResults(context);
-  }
-
-  void onItemTap(BuildContext context, Item item) {
-    //TODO: do something when tapping an item
   }
 }

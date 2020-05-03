@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
     InventoryPage(),
     ChatOverviewPage(),
   ];
-  Future<FirebaseUser> _user = FirebaseAuth.instance.currentUser();
   bool _showUserDetails = false;
 
   @override
@@ -106,28 +105,23 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDrawerHeader() {
     return FutureBuilder(
-      future: _user,
+      future: FirebaseAuth.instance.currentUser(),
       builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(child: Text('Loading....'));
-          default:
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-            return UserAccountsDrawerHeader(
-              arrowColor: Colors.black,
-              accountName: Text(snapshot.data.displayName),
-              accountEmail: Text(snapshot.data.email),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage:
-                    CachedNetworkImageProvider(snapshot.data.photoUrl),
-              ),
-              onDetailsPressed: () {
-                setState(() {
-                  _showUserDetails = !_showUserDetails;
-                });
-              },
-            );
-        }
+        if (!snapshot.hasData) return Container();
+
+        return UserAccountsDrawerHeader(
+          arrowColor: Colors.black,
+          accountName: Text(snapshot.data.displayName),
+          accountEmail: Text(snapshot.data.email),
+          currentAccountPicture: CircleAvatar(
+            backgroundImage: CachedNetworkImageProvider(snapshot.data.photoUrl),
+          ),
+          onDetailsPressed: () {
+            setState(() {
+              _showUserDetails = !_showUserDetails;
+            });
+          },
+        );
       },
     );
   }
@@ -179,10 +173,10 @@ class _HomePageState extends State<HomePage> {
             _setIndex(2);
           },
         ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-        ),
+        // ListTile(
+        //   leading: Icon(Icons.settings),
+        //   title: Text('Settings'),
+        // ),
       ],
     );
   }

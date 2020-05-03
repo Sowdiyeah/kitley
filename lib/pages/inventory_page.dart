@@ -12,12 +12,7 @@ class InventoryPage extends StatelessWidget {
     return FutureBuilder(
       future: FirebaseAuth.instance.currentUser(),
       builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(child: Text('Loading....'));
-          default:
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-        }
+        if (!snapshot.hasData) return Container();
 
         return FutureBuilder(
           future: getLocation(),
@@ -37,23 +32,32 @@ class InventoryPage extends StatelessWidget {
   }
 
   Widget _itemList(String uid, Position myPosition) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder(
       stream: Firestore.instance
           .collection('items')
           .where('owner', isEqualTo: uid)
           .limit(50)
           .snapshots(),
-      builder: (_, AsyncSnapshot<QuerySnapshot> ownerSnapshot) {
-        if (ownerSnapshot.hasError)
-          return Text('Error: ${ownerSnapshot.error}');
-
-        if (ownerSnapshot.connectionState == ConnectionState.waiting)
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator());
 
-        List<Widget> ownedItems = ownerSnapshot.data.documents
+        List<Widget> ownedItems = snapshot.data.documents
             .map((document) => Item.fromDocumentSnapshot(document))
-            .map((item) => item.toWidget(myPosition, () {}))
-            // .map((item) => _dismissibleItem(item))
+            .map((item) => item.toWidget(
+                  myPosition,
+                  () {},
+                  (_) {
+                    Firestore.instance
+                        .collection('items')
+                        .document(item.itemId)
+                        .delete();
+                  },
+                  Text(item.possessor != null
+                      ? 'loaned to: ${item.possessor}'
+                      : 'not loaned out'),
+                ))
             .toList();
 
         return StreamBuilder(
@@ -62,16 +66,22 @@ class InventoryPage extends StatelessWidget {
               .where('possessor', isEqualTo: uid)
               .limit(50)
               .snapshots(),
-          builder: (_, AsyncSnapshot<QuerySnapshot> possessorSnapshot) {
-            if (possessorSnapshot.hasError)
-              return Text('Error : ${possessorSnapshot.error}');
-
-            if (possessorSnapshot.connectionState == ConnectionState.waiting)
+          builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) return Text('Error : ${snapshot.error}');
+            if (!snapshot.hasData)
               return Center(child: CircularProgressIndicator());
 
-            List<Widget> possessedItems = possessorSnapshot.data.documents
+            List<Widget> possessedItems = snapshot.data.documents
                 .map((document) => Item.fromDocumentSnapshot(document))
-                .map((item) => item.toWidget(myPosition, () {}))
+                .map((item) => item.toWidget(
+                      myPosition,
+                      () {},
+                      (_) {
+                        Item newItem = item..possessor = null;
+                        newItem.update();
+                      },
+                      Text('from: ${item.owner.substring(0, 15)}'),
+                    ))
                 .toList();
 
             return _itemListView(ownedItems, possessedItems);
@@ -82,6 +92,8 @@ class InventoryPage extends StatelessWidget {
   }
 
   Widget _itemListView(List<Widget> ownedItems, List<Widget> possessedItems) {
+    if (ownedItems.isEmpty && possessedItems.isEmpty) return _infoView();
+
     return ListView.builder(
       itemCount: ownedItems.length + possessedItems.length + 2,
       itemBuilder: (_, int index) {
@@ -91,10 +103,15 @@ class InventoryPage extends StatelessWidget {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Your items', style: TextStyle(fontSize: 32)),
+                  child: Text('Your items', style: TextStyle(fontSize: 24)),
                 ),
                 ownedItems.isEmpty
-                    ? Text('You do not own any items.')
+                    ? Text(
+                        'You have not added any items in Kitley yet.\n' +
+                            'Press the "+" icon in the top right corner to' +
+                            ' add an item.',
+                        textAlign: TextAlign.center,
+                      )
                     : Container()
               ],
             ),
@@ -102,9 +119,7 @@ class InventoryPage extends StatelessWidget {
         }
 
         // index >= 1
-        if (index <= ownedItems.length) {
-          return ownedItems[index - 1];
-        }
+        if (index <= ownedItems.length) return ownedItems[index - 1];
 
         // index >= ownedItems.length + 1
         if (index == ownedItems.length + 1) {
@@ -114,10 +129,15 @@ class InventoryPage extends StatelessWidget {
                 Divider(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Loaned items', style: TextStyle(fontSize: 32)),
+                  child: Text('Borrowed items', style: TextStyle(fontSize: 24)),
                 ),
                 possessedItems.isEmpty
-                    ? Text('You have no loaned items.')
+                    ? Text(
+                        'You have no loaned items.\n' +
+                            'Go to the "Borrow" section to start ' +
+                            'borrowing items.',
+                        textAlign: TextAlign.center,
+                      )
                     : Container()
               ],
             ),
@@ -130,17 +150,23 @@ class InventoryPage extends StatelessWidget {
     );
   }
 
-  // Widget _dismissibleItem(Widget card) {
-  //   return Dismissible(
-  //     key: Key('${card.hashCode}'),
-  //     background: Container(color: Colors.red),
-  //     onDismissed: (DismissDirection direction) {
-  //       Firestore.instance
-  //           .collection('items')
-  //           .document(document.documentID)
-  //           .delete();
-  //     },
-  //     child: card,
-  //   );
-  // }
+  Widget _infoView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            'No items in inventory.',
+            style: TextStyle(fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            'Borrow an item in the "Borrow" section\n' +
+                'or press the "+" icon in the top right corner to add an item.',
+            textAlign: TextAlign.center,
+          )
+        ],
+      ),
+    );
+  }
 }
