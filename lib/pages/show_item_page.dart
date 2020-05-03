@@ -31,15 +31,10 @@ class _ShowItemPageState extends State<ShowItemPage> {
       body: FutureBuilder(
         future: FirebaseAuth.instance.currentUser(),
         builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(child: Text('Loading....'));
-            default:
-              if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+          if (!snapshot.hasData) return Container();
 
-              User myUser = User.fromFireBaseUser(snapshot.data);
-              return _buildButtons(context, myUser);
-          }
+          User myUser = User.fromFireBaseUser(snapshot.data);
+          return _buildButtons(context, myUser);
         },
       ),
     );
@@ -48,6 +43,7 @@ class _ShowItemPageState extends State<ShowItemPage> {
   Widget _buildButtons(BuildContext context, User myUser) {
     return Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           _buildChatButton(context, myUser),
           _buildBorrowButton(context, myUser),

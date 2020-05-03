@@ -69,14 +69,13 @@ class Item {
           leading: CircleAvatar(),
           title: Text(name),
           subtitle: FutureBuilder(
-            initialData: -1.0,
             future: distanceTo(myPosition),
             builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+              if (!snapshot.hasData) return Container();
 
               double distance = snapshot.data;
               if (distance == null) return Text('Enable location services');
-              if (distance == -1.0) return Container();
               // distance is in meters
               if (distance < 1000)
                 return Text('${distance.toStringAsFixed(0)} meter');

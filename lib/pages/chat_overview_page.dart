@@ -11,15 +11,10 @@ class ChatOverviewPage extends StatelessWidget {
     return FutureBuilder(
       future: FirebaseAuth.instance.currentUser(),
       builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(child: Text('Loading....'));
-          default:
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        if (!snapshot.hasData) return Container();
 
-            User myUser = User.fromFireBaseUser(snapshot.data);
-            return _buildChatList(context, myUser);
-        }
+        User myUser = User.fromFireBaseUser(snapshot.data);
+        return _buildChatList(context, myUser);
       },
     );
   }
@@ -33,10 +28,10 @@ class ChatOverviewPage extends StatelessWidget {
           .snapshots(),
       builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator());
-        } else if (snapshot.data.documents.isEmpty) {
+
+        if (snapshot.data.documents.isEmpty) {
           return Center(
             child: Text(
               'No active chats yet.',
@@ -64,12 +59,8 @@ class ChatOverviewPage extends StatelessWidget {
     return FutureBuilder(
       future: Firestore.instance.collection('users').document(userId).get(),
       builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Container();
-          default:
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-        }
+        if (!snapshot.hasData) return Container();
+
         User otherUser = User.fromDocumentSnapshot(snapshot.data);
         return Dismissible(
           key: Key(userId),

@@ -18,14 +18,8 @@ class MyApp extends StatelessWidget {
         body: FutureBuilder(
           future: FirebaseAuth.instance.currentUser(),
           builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Center(child: Text('Loading....'));
-              default:
-                if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-                if (snapshot.hasData) return HomePage();
-                return LoginPage();
-            }
+            if (!snapshot.hasData) return LoginPage();
+            return HomePage();
           },
         ),
       ),

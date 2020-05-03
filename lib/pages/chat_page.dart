@@ -42,27 +42,25 @@ class ChatPage extends StatelessWidget {
             .snapshots(),
         builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
-          } else {
-            List<Message> messages = snapshot.data.documents
-                .map<Message>(
-                    (snapshot) => Message.fromDocumentSnapshot(snapshot))
-                .toList();
 
-            return ListView.builder(
-              padding: EdgeInsets.all(8.0),
-              reverse: true,
-              itemBuilder: (_, int index) => _messageBuilder(
-                context,
-                index,
-                messages[index],
-                myUser.uid.hashCode,
-              ),
-              itemCount: messages.length,
-            );
-          }
+          List<Message> messages = snapshot.data.documents
+              .map<Message>(
+                  (snapshot) => Message.fromDocumentSnapshot(snapshot))
+              .toList();
+
+          return ListView.builder(
+            padding: EdgeInsets.all(8.0),
+            reverse: true,
+            itemBuilder: (_, int index) => _messageBuilder(
+              context,
+              index,
+              messages[index],
+              myUser.uid.hashCode,
+            ),
+            itemCount: messages.length,
+          );
         },
       ),
     );

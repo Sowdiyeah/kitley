@@ -24,10 +24,9 @@ class ItemBuilder extends StatelessWidget {
       stream: stream,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator());
-        }
+
         return FutureBuilder(
           future: getLocation(),
           builder: (_, AsyncSnapshot<Position> positionSnapshot) {

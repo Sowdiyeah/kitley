@@ -12,12 +12,7 @@ class InventoryPage extends StatelessWidget {
     return FutureBuilder(
       future: FirebaseAuth.instance.currentUser(),
       builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(child: Text('Loading....'));
-          default:
-            if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-        }
+        if (!snapshot.hasData) return Container();
 
         return FutureBuilder(
           future: getLocation(),
@@ -37,20 +32,18 @@ class InventoryPage extends StatelessWidget {
   }
 
   Widget _itemList(String uid, Position myPosition) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder(
       stream: Firestore.instance
           .collection('items')
           .where('owner', isEqualTo: uid)
           .limit(50)
           .snapshots(),
-      builder: (_, AsyncSnapshot<QuerySnapshot> ownerSnapshot) {
-        if (ownerSnapshot.hasError)
-          return Text('Error: ${ownerSnapshot.error}');
-
-        if (ownerSnapshot.connectionState == ConnectionState.waiting)
+      builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+        if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator());
 
-        List<Widget> ownedItems = ownerSnapshot.data.documents
+        List<Widget> ownedItems = snapshot.data.documents
             .map((document) => Item.fromDocumentSnapshot(document))
             .map((item) => item.toWidget(
                   myPosition,
@@ -73,14 +66,12 @@ class InventoryPage extends StatelessWidget {
               .where('possessor', isEqualTo: uid)
               .limit(50)
               .snapshots(),
-          builder: (_, AsyncSnapshot<QuerySnapshot> possessorSnapshot) {
-            if (possessorSnapshot.hasError)
-              return Text('Error : ${possessorSnapshot.error}');
-
-            if (possessorSnapshot.connectionState == ConnectionState.waiting)
+          builder: (_, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) return Text('Error : ${snapshot.error}');
+            if (!snapshot.hasData)
               return Center(child: CircularProgressIndicator());
 
-            List<Widget> possessedItems = possessorSnapshot.data.documents
+            List<Widget> possessedItems = snapshot.data.documents
                 .map((document) => Item.fromDocumentSnapshot(document))
                 .map((item) => item.toWidget(
                       myPosition,
