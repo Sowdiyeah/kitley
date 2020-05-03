@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kitley/utils/item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:kitley/pages/show_item_page.dart';
+import 'package:kitley/utils/item.dart';
 import 'package:kitley/search/filters_page.dart';
 import 'package:kitley/utils/item_util.dart';
 
@@ -62,6 +63,8 @@ class CustomSearchDelegate extends SearchDelegate {
   }
 
   void onItemTap(BuildContext context, Item item) {
-    //TODO: do something when tapping an item
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => ShowItemPage(item: item),
+    ));
   }
 }
