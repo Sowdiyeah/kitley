@@ -52,7 +52,13 @@ class InventoryPage extends StatelessWidget {
 
         List<Widget> ownedItems = ownerSnapshot.data.documents
             .map((document) => Item.fromDocumentSnapshot(document))
-            .map((item) => item.toWidget(myPosition, () {}))
+            .map((item) => item.toWidget(
+                  myPosition,
+                  () {},
+                  Text(item.possessor != null
+                      ? 'loaned to: ${item.possessor}'
+                      : 'not loaned out'),
+                ))
             // .map((item) => _dismissibleItem(item))
             .toList();
 
@@ -71,7 +77,11 @@ class InventoryPage extends StatelessWidget {
 
             List<Widget> possessedItems = possessorSnapshot.data.documents
                 .map((document) => Item.fromDocumentSnapshot(document))
-                .map((item) => item.toWidget(myPosition, () {}))
+                .map((item) => item.toWidget(
+                      myPosition,
+                      () {},
+                      Text('owned by: ${item.owner}'),
+                    ))
                 .toList();
 
             return _itemListView(ownedItems, possessedItems);

@@ -55,7 +55,7 @@ class Item {
     );
   }
 
-  Widget toWidget(Position myPosition, void Function() onTap) {
+  Widget toWidget(Position myPosition, void Function() onTap, Widget trailing) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(),
@@ -79,6 +79,7 @@ class Item {
           },
         ),
         onTap: onTap,
+        trailing: trailing,
       ),
     );
   }

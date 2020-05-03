@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,7 +55,17 @@ class ItemBuilder extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         DocumentSnapshot document = documentList[index];
         Item item = Item.fromDocumentSnapshot(document);
-        return item.toWidget(myPosition, () => onTap(context, item));
+        return item.toWidget(
+          myPosition,
+          () => onTap(context, item),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(
+              Random().nextInt(6),
+              (index) => Icon(Icons.star),
+            ),
+          ),
+        );
       },
     );
   }
