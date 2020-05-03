@@ -19,6 +19,7 @@ class Item {
   }
 
   Item.fromDocumentSnapshot(DocumentSnapshot document) {
+    itemId = document.documentID;
     name = document['name'];
     brand = document['brand'];
     category = document['category'];
@@ -82,5 +83,12 @@ class Item {
         trailing: trailing,
       ),
     );
+  }
+
+  void update() async {
+    await Firestore.instance
+        .collection('items')
+        .document(itemId)
+        .setData(toMap());
   }
 }

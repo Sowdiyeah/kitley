@@ -6,12 +6,23 @@ import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/utils/item.dart';
 import 'package:kitley/utils/user.dart';
 
-class ShowItemPage extends StatelessWidget {
-  final Item _item;
+class ShowItemPage extends StatefulWidget {
+  final Item item;
 
-  const ShowItemPage({Key key, @required item})
-      : _item = item,
-        super(key: key);
+  const ShowItemPage({Key key, this.item}) : super(key: key);
+
+  @override
+  _ShowItemPageState createState() => _ShowItemPageState();
+}
+
+class _ShowItemPageState extends State<ShowItemPage> {
+  Item _item;
+
+  @override
+  void initState() {
+    super.initState();
+    _item = widget.item;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,48 +38,75 @@ class ShowItemPage extends StatelessWidget {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
               User myUser = User.fromFireBaseUser(snapshot.data);
-              return _buildButton(context, myUser);
+              return _buildButtons(context, myUser);
           }
         },
       ),
     );
   }
 
-  Widget _buildButton(BuildContext context, User myUser) {
+  Widget _buildButtons(BuildContext context, User myUser) {
     return Center(
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.red,
-        child: Text('Chat!'),
-        onPressed: myUser.uid == _item.owner
-            ? null
-            : () async {
-                if (myUser.uid != _item.owner) {
-                  Firestore.instance
-                      .collection('users')
-                      .document(myUser.uid)
-                      .collection('chats')
-                      .document(_item.owner)
-                      .setData({});
-                }
-
-                DocumentSnapshot documentSnapshot = await Firestore.instance
-                    .collection('users')
-                    .document(_item.owner)
-                    .get();
-                User otherUser = User.fromDocumentSnapshot(documentSnapshot);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ChatPage(
-                      myUser: myUser,
-                      otherUser: otherUser,
-                    ),
-                  ),
-                );
-              },
+      child: Column(
+        children: <Widget>[
+          _buildChatButton(context, myUser),
+          _buildBorrowButton(context, myUser),
+        ],
       ),
+    );
+  }
+
+  Widget _buildChatButton(BuildContext context, User myUser) {
+    return RaisedButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      color: Colors.red,
+      child: Text('Chat!'),
+      onPressed: myUser.uid == _item.owner
+          ? null
+          : () async {
+              if (myUser.uid != _item.owner) {
+                Firestore.instance
+                    .collection('users')
+                    .document(myUser.uid)
+                    .collection('chats')
+                    .document(_item.owner)
+                    .setData({});
+              }
+
+              DocumentSnapshot documentSnapshot = await Firestore.instance
+                  .collection('users')
+                  .document(_item.owner)
+                  .get();
+              User otherUser = User.fromDocumentSnapshot(documentSnapshot);
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ChatPage(
+                    myUser: myUser,
+                    otherUser: otherUser,
+                  ),
+                ),
+              );
+            },
+    );
+  }
+
+  Widget _buildBorrowButton(BuildContext context, User myUser) {
+    return RaisedButton(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      color: Colors.red,
+      child: Text('Borrow!'),
+      onPressed: myUser.uid == _item.owner || _item.possessor != null
+          ? null
+          : () {
+              setState(() {
+                _item.possessor = myUser.uid;
+              });
+              _item.update();
+            },
     );
   }
 }
