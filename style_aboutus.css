@@ -1,0 +1,63 @@
+*
+{
+	margin: 0;
+	padding: 0;
+}
+
+body
+{
+	font-family: sans-serif;
+}
+
+#nav-bar
+{
+	position: : sticky;
+	top: 0;
+	z-index: 10
+
+}
+.navbar
+{
+	background-image: linear-gradient(to right, #ff9800	,#ff9800 );
+	padding:0 !important;
+}
+
+.navbar-brand img
+{
+	height: 80px;
+	padding-left: 20px;
+}
+
+
+.navbar-nav li
+{
+	padding: 0 30px;
+}
+
+.navbar-nav li a
+{
+	color: #000 !important;
+	font-weight: 800;
+	font-size: 20;
+	float: right;
+	text-align: left;
+}
+
+.fa-bars
+{
+	color: #fff;
+	font-size: 30px !important;
+}
+
+.navbar-toggler
+{
+	outline: none !important;
+}
+
+
+#banner
+{
+	background-image: linear-gradient(to right, #ff9800, #fdf276 );
+	padding-top: 5%;
+
+}
