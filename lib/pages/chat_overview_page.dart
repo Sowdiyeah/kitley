@@ -71,21 +71,33 @@ class ChatOverviewPage extends StatelessWidget {
             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
         }
         User otherUser = User.fromDocumentSnapshot(snapshot.data);
-        return Card(
-          child: ListTile(
-            leading: CircleAvatar(),
-            title: Text(otherUser.name),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => ChatPage(
-                    myUser: myUser,
-                    otherUser: otherUser,
+        return Dismissible(
+          key: Key(userId),
+          background: Container(color: Colors.red),
+          child: Card(
+            child: ListTile(
+              leading: CircleAvatar(),
+              title: Text(otherUser.name),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ChatPage(
+                      myUser: myUser,
+                      otherUser: otherUser,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+          onDismissed: (DismissDirection direction) {
+            Firestore.instance
+                .collection('users')
+                .document(myUser.uid)
+                .collection('chats')
+                .document(userId)
+                .delete();
+          },
         );
       },
     );
