@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:kitley/pages/chat_page.dart';
 import 'package:kitley/utils/item.dart';
 import 'package:kitley/utils/user.dart';
 
@@ -18,7 +19,7 @@ class ShowItemPage extends StatelessWidget {
       appBar: AppBar(title: Text(_item.name)),
       body: FutureBuilder(
         future: FirebaseAuth.instance.currentUser(),
-        builder: (_, AsyncSnapshot<FirebaseUser> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return Center(child: Text('Loading....'));
@@ -26,14 +27,14 @@ class ShowItemPage extends StatelessWidget {
               if (snapshot.hasError) return Text('Error: ${snapshot.error}');
 
               User myUser = User.fromFireBaseUser(snapshot.data);
-              return _buildButton(myUser);
+              return _buildButton(context, myUser);
           }
         },
       ),
     );
   }
 
-  Widget _buildButton(User myUser) {
+  Widget _buildButton(BuildContext context, User myUser) {
     return Center(
       child: RaisedButton(
         shape: RoundedRectangleBorder(
@@ -41,14 +42,32 @@ class ShowItemPage extends StatelessWidget {
         ),
         color: Colors.red,
         child: Text('Chat!'),
-        onPressed: () {
-          Firestore.instance
-              .collection('users')
-              .document(myUser.uid)
-              .collection('chats')
-              .document(_item.owner)
-              .setData({});
-        },
+        onPressed: myUser.uid == _item.owner
+            ? null
+            : () async {
+                if (myUser.uid != _item.owner) {
+                  Firestore.instance
+                      .collection('users')
+                      .document(myUser.uid)
+                      .collection('chats')
+                      .document(_item.owner)
+                      .setData({});
+                }
+
+                DocumentSnapshot documentSnapshot = await Firestore.instance
+                    .collection('users')
+                    .document(_item.owner)
+                    .get();
+                User otherUser = User.fromDocumentSnapshot(documentSnapshot);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ChatPage(
+                      myUser: myUser,
+                      otherUser: otherUser,
+                    ),
+                  ),
+                );
+              },
       ),
     );
   }
