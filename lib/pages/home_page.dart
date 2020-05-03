@@ -173,10 +173,10 @@ class _HomePageState extends State<HomePage> {
             _setIndex(2);
           },
         ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Settings'),
-        ),
+        // ListTile(
+        //   leading: Icon(Icons.settings),
+        //   title: Text('Settings'),
+        // ),
       ],
     );
   }
