@@ -55,7 +55,7 @@ class InventoryPage extends StatelessWidget {
                         .delete();
                   },
                   Text(item.possessor != null
-                      ? 'loaned to: ${item.possessor}'
+                      ? 'loaned to: ${item.possessor.substring(0, 15)}'
                       : 'not loaned out'),
                 ))
             .toList();
