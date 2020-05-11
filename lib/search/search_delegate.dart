@@ -47,8 +47,8 @@ class CustomSearchDelegate extends SearchDelegate {
     return ItemBuilder(
       stream: Firestore.instance
           .collection('items')
-          .where('name', isGreaterThanOrEqualTo: query.toUpperCase())
-          .where('name', isLessThanOrEqualTo: query.toLowerCase() + '\uf8ff')
+          .where('name', isGreaterThanOrEqualTo: query)
+          .where('name', isLessThanOrEqualTo: query + '\uf8ff')
           .limit(50)
           .snapshots(),
     );

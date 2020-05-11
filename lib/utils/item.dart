@@ -35,7 +35,7 @@ class Item {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
+      'name': name.toLowerCase(),
       'brand': brand,
       'category': category,
       'owner': owner,
