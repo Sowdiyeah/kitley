@@ -148,6 +148,13 @@ class _ComposerState extends State<Composer> {
   void _handleSubmitted(String text) {
     _textController.clear();
 
+    Firestore.instance
+        .collection('users')
+        .document(widget.otherUser.uid)
+        .collection('chats')
+        .document(widget.myUser.uid)
+        .setData({});
+
     Message message = Message()
       ..idFrom = widget.myUser.uid.hashCode
       ..idTo = widget.otherUser.uid.hashCode
